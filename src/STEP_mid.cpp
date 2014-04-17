@@ -326,6 +326,8 @@ STEP_API UINT WINAPI STEPLoad(FILE_INFO *pFileMP3, LPCTSTR szExt)
         {
             readMetaEvent(pFileMP3, fp, events, i);
         }
+        // «—ˆ‘‚«‚ß‚é‚æ‚¤‚É‚·‚é‚Æ‚«‚Ífree‚µ‚È‚¢‚æ‚¤‚É‚·‚é
+        free(events);
         fclose(fp);
         SetFormat(pFileMP3, nFileTypeMID);
         SetFileTypeName(pFileMP3, "MIDI");
