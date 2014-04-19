@@ -1,43 +1,53 @@
-#include <windows.h>
+ï»¿#include <windows.h>
 
 #include <stdio.h>
 #include <string.h>
 
 #include "STEPlugin.h"
 
-using namespace std;
+#include "SMFUtil.h"
+#include "Util.h"
 
-enum MetaEventType
-{
-    META_COMMENT = 0,
-    META_COPYRIGHT,
-    META_SEQNAME,
-    META_MAX,
-};
+#include "resource.h"
 
-// \‘¢‘Ì
-typedef struct _MetaEvent
-{
-    // ƒgƒ‰ƒbƒN‚Ì’·‚³‚ÌƒAƒhƒŒƒX
-    int trkLenOffset;
-    int offset;
-    int length;
-} MetaEvent;
+#ifdef UNICODE
+#ifdef _WIN32
+#define fopen _wfopen
+#endif
+#endif
+
+#define PLUGINNAME TEXT("STEP_mid")
 
 static UINT nPluginID;
 static UINT nFileTypeMID;
-static const char *spMidFileType = "MThd";
 
-static void (*saSetFunc[])(FILE_INFO*,LPCSTR) = {SetComment, SetArtistName, SetTrackName};
+static void (*saSetFunc[])(FILE_INFO*,LPCTSTR) = {SetComment, SetArtistName, SetTrackName};
+static LPCTSTR (*saGetFunc[])(FILE_INFO*) = {GetComment, GetArtistName, GetTrackName};
+
+static TCHAR plugininfo[256];
+
+extern "C" BOOL WINAPI DllMainCRTStartup(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
+{
+    switch (fdwReason) {
+    case DLL_PROCESS_ATTACH:
+        ::LoadString(hinstDLL, IDS_PLUGININFO, plugininfo, sizeof(plugininfo));
+        break;
+    case DLL_THREAD_ATTACH:
+    case DLL_THREAD_DETACH:
+    case DLL_PROCESS_DETACH:
+        break;
+    }
+    return TRUE;
+}
 
 void readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, MetaEvent *events, int type)
 {
     MetaEvent *p = &events[type];
-    if (p->offset >= 0)
+    if ( p->offset >= 0 )
     {
         int length = p->length;
-        char *buf = (char *)malloc(length + 1);
-        if (!buf)
+        LPTSTR buf = (LPTSTR)malloc(length + 1);
+        if ( !buf )
         {
             return;
         }
@@ -49,195 +59,16 @@ void readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, MetaEvent *events, int type)
     }
 }
 
-int varVal2Int(FILE *fp)
-{
-    int val = 0;
-    int c;
-    int f;
-    int i;
-
-    c = fgetc(fp);
-    f = c & 0x7f;
-    for (i = 0; ; i++)
-    {
-        val = (val << 7) | (c & 0x7f);
-        if ((c & 0x80) == 0 || c == EOF)
-        {
-            break;
-        }
-        c = fgetc(fp);
-    }
-    // 32ƒrƒbƒgˆÈã‚È‚ç•s³ˆµ‚¢
-    if ((i == 4 && f > 0x07) || i > 4)
-    {
-        return -1;
-    }
-    return val;
-}
-
-void int2VarVal(FILE *fp, int val)
-{
-    // 0ˆÈ‰º‚Í0ˆµ‚¢
-    if (val <= 0)
-    {
-        fputc(0, fp);
-        return;
-    }
-    {
-        int a[5];
-        int i;
-
-        for (i = 0; ; i++)
-        {
-            a[i] = val & 0x7f;
-            val >>= 7;
-            if (val == 0)
-            {
-                break;
-            }
-        }
-        for (; i>= 0; i--)
-        {
-            if (i == 0)
-            {
-                fputc(a[i], fp);
-            }
-            else
-            {
-                fputc(a[i] | 0x80, fp);
-            }
-        }
-    }
-}
-
-// Å‰‚Ìƒgƒ‰ƒbƒN‚Ìæ“ª‚Éƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ª‚ ‚é‚Æ‚«‚ÉÀs
-static MetaEvent* findThreeMetaEvents(FILE *fp)
-{
-    int i;
-    char buf[4];
-    int curTrack = 0;
-    int trkLenOffset = 0;
-    int c;
-    // ƒwƒbƒ_
-    fread(buf, 4, 1, fp);
-    if (strncmp((const char *)buf, spMidFileType, 4))
-    {
-        return NULL;
-    }
-    fseek(fp, 10, SEEK_CUR);
-    MetaEvent *event = (MetaEvent *)malloc(sizeof(MetaEvent) * 3);
-    if (!event)
-    {
-        return NULL;
-    }
-    // ‰Šú‰»
-    for (i = 0; i < META_MAX; i++)
-    {
-        event[i].offset = -1;
-    }
-    for (;;)
-    {
-        if (fread(buf, 4, 1, fp) < 1 || feof(fp))
-        {
-            // ‚±‚±‚ÅI—¹‚·‚é‚±‚Æ‚ª‚È‚¢H
-            break;
-        }
-        if (strncmp((const char *)buf, "MTrk", 4))
-        {
-            free(event);
-            return NULL;
-        }
-        trkLenOffset = ftell(fp);
-        // ƒTƒCƒY‚Í–³‹
-        fseek(fp, 4, SEEK_CUR);
-        for (;;)
-        {
-            // ƒfƒ‹ƒ^ƒ^ƒCƒ€‚Í“Ç‚İ”ò‚Î‚·
-            varVal2Int(fp);
-
-            c = fgetc(fp);
-            if (c == EOF)
-            {
-                // –{—ˆ‚±‚±‚ÅI—¹‚·‚é‚Ì‚ÍƒGƒ‰[‚Ì‚Í‚¸‚¾‚ª
-                break;
-            }
-            if (c & 0x80)
-            {
-                if (c & 0xf0)
-                {
-                    if (c == 0xff)
-                    {
-                        // ƒƒ^ƒCƒxƒ“ƒg
-                        int type = fgetc(fp);
-                        int length = varVal2Int(fp);
-                        if (length < 0)
-                        {
-                            free(event);
-                            return NULL;
-                        }
-
-                        if (type >= 1 && type <= 3)
-                        {
-                            // ƒeƒLƒXƒg(ƒRƒƒ“ƒg), ’˜ìŒ (ì‹ÈÒ), ƒV[ƒPƒ“ƒX–¼(‹È–¼)
-                            // Å‰‚Ìƒgƒ‰ƒbƒN‚Å‚È‚¯‚ê‚Î‹È–¼‚Æ‚µ‚Äˆµ‚í‚È‚¢
-                            if (type != 3 || curTrack == 0)
-                            {
-                                MetaEvent *p = &event[type -1];
-                                if (p->offset < 0)
-                                {
-                                    p->length = length;
-                                    p->offset = ftell(fp);
-                                    p->trkLenOffset = trkLenOffset;
-                                }
-                            }
-                        }
-                        else if (type == 0x2f)
-                        {
-                            // ƒGƒ“ƒhƒIƒuƒgƒ‰ƒbƒN
-                            break;
-                        }
-                        // length•ª“Ç‚İ”ò‚Î‚µ
-                        fseek(fp, length, SEEK_CUR);
-                    }
-                    else
-                    {
-                        // SysEx‚Í“Ç‚İ”ò‚Î‚·
-                        int length = varVal2Int(fp);
-                        if (length < 0)
-                        {
-                            free(event);
-                            return NULL;
-                        }
-                        fseek(fp, length, SEEK_CUR);
-                    }
-                }
-                else
-                {
-                    // 3ƒoƒCƒg‚Ìƒ`ƒƒƒ“ƒlƒ‹ƒƒbƒZ[ƒW
-                    fseek(fp, 2, SEEK_CUR);
-                }
-            }
-            else
-            {
-                // ƒ‰ƒ“ƒjƒ“ƒOƒXƒe[ƒ^ƒXƒ‹[ƒ‹“K—pƒ`ƒƒƒ“ƒlƒ‹ƒƒbƒZ[ƒW
-                fseek(fp, 1, SEEK_CUR);
-            }
-        }
-        curTrack++;
-    }
-    return event;
-}
-
 STEP_API LPCTSTR WINAPI STEPGetPluginInfo(void)
 {
-    return "Version 0.01\r\nMIDIƒtƒ@ƒCƒ‹‚ğƒTƒ|[ƒg‚µ‚Ä‚¢‚Ü‚·";
+    return plugininfo;
 }
 
 STEP_API bool WINAPI STEPInit(UINT pID, LPCTSTR szPluginFolder)
 {
     if (Initialize() == false)	return false;
     nPluginID = pID;
-    // INIƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
+    // INIãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿
     /*
     strINI = szPluginFolder;
     strINI += "STEP_ogg.ini";
@@ -247,7 +78,7 @@ STEP_API bool WINAPI STEPInit(UINT pID, LPCTSTR szPluginFolder)
     nFileTypeOGG = STEPRegisterExt(nPluginID, "ogg", hOGGBitmap);
     DeleteObject(hOGGBitmap);*/
 
-    nFileTypeMID = STEPRegisterExt(nPluginID, "mid", NULL);
+    nFileTypeMID = STEPRegisterExt(nPluginID, TEXT("mid"), NULL);
     return true;
 }
 
@@ -263,7 +94,7 @@ STEP_API UINT WINAPI STEPGetAPIVersion(void)
 
 STEP_API LPCTSTR WINAPI STEPGetPluginName(void)
 {
-    return "STEP_mid";
+    return PLUGINNAME;
 }
 
 STEP_API bool WINAPI STEPSupportSIF(UINT nFormat)
@@ -313,28 +144,37 @@ STEP_API UINT WINAPI STEPGetColumnMax(UINT nFormat, COLUMNTYPE nColumn, bool isE
 
 STEP_API UINT WINAPI STEPLoad(FILE_INFO *pFileMP3, LPCTSTR szExt)
 {
-    FILE *fp = fopen(GetFullPath(pFileMP3), "rb");
-    if (!fp)
+    FILE *fp = fopen(GetFullPath(pFileMP3), TEXT("rb"));
+    if ( !fp )
     {
         return STEP_ERROR;
     }
-    MetaEvent *events = findThreeMetaEvents(fp);
-    if (events)
+    MetaEvent *events = (MetaEvent *)malloc(sizeof(MetaEvent) * META_MAX);
+    if ( !events )
+    {
+        fclose(fp);
+        return STEP_ERROR;
+    }
+    UINT ret;
+    if ( findMetaEvents(fp, events) )
     {
         int i;
         for (i = 0; i < META_MAX; i++)
         {
             readMetaEvent(pFileMP3, fp, events, i);
         }
-        // «—ˆ‘‚«‚ß‚é‚æ‚¤‚É‚·‚é‚Æ‚«‚Ífree‚µ‚È‚¢‚æ‚¤‚É‚·‚é
-        free(events);
-        fclose(fp);
         SetFormat(pFileMP3, nFileTypeMID);
-        SetFileTypeName(pFileMP3, "MIDI");
-        return STEP_SUCCESS;
+        SetFileTypeName(pFileMP3, TEXT("MIDI"));
+        ret = STEP_SUCCESS;
     }
+    else
+    {
+        ret = STEP_UNKNOWN_FORMAT;
+    }
+    // å°†æ¥æ›¸ãè¾¼ã‚ã‚‹ã‚ˆã†ã«ã™ã‚‹ã¨ãã¯freeã—ãªã„ã‚ˆã†ã«ã™ã‚‹
+    free(events);
     fclose(fp);
-    return STEP_UNKNOWN_FORMAT;
+    return ret;
 
     /*
     if (stricmp(szExt, "ogg") == 0)
@@ -343,8 +183,8 @@ STEP_API UINT WINAPI STEPLoad(FILE_INFO *pFileMP3, LPCTSTR szExt)
         if (LoadAttributeFileOGG(pFileMP3) == false)
         {
             CString	strMsg;
-            strMsg.Format("%s ‚Ì“Ç‚İ‚İ‚É¸”s‚µ‚Ü‚µ‚½", GetFullPath(pFileMP3));
-            MessageBox(NULL, strMsg, "OggVorbisƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ¸”s", MB_ICONSTOP|MB_OK|MB_TOPMOST);
+            strMsg.Format("%s ã®èª­ã¿è¾¼ã¿ã«å¤±æ•—ã—ã¾ã—ãŸ", GetFullPath(pFileMP3));
+            MessageBox(NULL, strMsg, "OggVorbisãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿å¤±æ•—", MB_ICONSTOP|MB_OK|MB_TOPMOST);
             return STEP_ERROR;
         }
         else
@@ -369,8 +209,8 @@ STEP_API UINT WINAPI STEPSave(FILE_INFO *pFileMP3)
         if (WriteAttributeFileOGG(pFileMP3) == false)
         {
             CString	strMsg;
-            strMsg.Format("%s ‚Ì‘‚«‚İ‚É¸”s‚µ‚Ü‚µ‚½", GetFullPath(pFileMP3));
-            MessageBox(NULL, strMsg, "OggVorbisƒtƒ@ƒCƒ‹‚Ì‘‚«‚İ¸”s", MB_ICONSTOP|MB_OK|MB_TOPMOST);
+            strMsg.Format("%s ã®æ›¸ãè¾¼ã¿ã«å¤±æ•—ã—ã¾ã—ãŸ", GetFullPath(pFileMP3));
+            MessageBox(NULL, strMsg, "OggVorbisãƒ•ã‚¡ã‚¤ãƒ«ã®æ›¸ãè¾¼ã¿å¤±æ•—", MB_ICONSTOP|MB_OK|MB_TOPMOST);
             return STEP_ERROR;
         }
         return STEP_SUCCESS;
@@ -387,7 +227,7 @@ STEP_API void WINAPI STEPShowOptionDialog(HWND hWnd)
     CPropertySheet page;
     dlg1.m_bGenreListSelect = bOptGenreListSelect;
     page.AddPage(&dlg1);
-    page.SetTitle(CString(STEPGetPluginName()) + " ƒIƒvƒVƒ‡ƒ“İ’è");
+    page.SetTitle(CString(STEPGetPluginName()) + " ã‚ªãƒ—ã‚·ãƒ§ãƒ³è¨­å®š");
     if (page.DoModal() == IDOK) {
     	bOptGenreListSelect = dlg1.m_bGenreListSelect ? true : false;
 

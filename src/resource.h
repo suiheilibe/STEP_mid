@@ -1,0 +1,1 @@
+#define IDS_PLUGININFO 101
