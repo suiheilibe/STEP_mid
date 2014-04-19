@@ -20,7 +20,7 @@ $(TARGET): $(OBJECTS) $(EXPFILE) $(RESOURCE)
 	$(CC) -shared -s -o $@ $(EXPFILE) $(OBJECTS) $(RESOURCE) -nostartfiles -static
 
 clean:
-	rm $(OBJECTS) $(TARGET) $(EXPFILE) $(RESOURCE)
+	-rm $(OBJECTS) $(TARGET) $(EXPFILE) $(RESOURCE)
 
 distclean: clean
-	rm resource.rc
+	-rm resource.rc
