@@ -6,7 +6,6 @@
 #include "STEPlugin.h"
 
 #include "SMFUtil.h"
-#include "Util.h"
 
 #include "resource.h"
 
