@@ -1,5 +1,6 @@
 *.ste
 *.o
+*.a
 *.BAK
 *.exp
 dist/

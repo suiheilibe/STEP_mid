@@ -2,6 +2,7 @@ CC=g++
 CXXFLAGS=-I. -ISTEP_SDK/ -Wall -O2 -m32
 OBJECTS=STEP_mid.o SMFUtil.o STEP_SDK/STEPlugin.o
 RESOURCE=resource.o
+ARCHIVE=libSTEP_mid.a
 TARGET=STEP_mid.ste
 EXPFILE=STEP_mid.exp
 
@@ -17,10 +18,13 @@ $(EXPFILE): $(OBJECTS)
 	dlltool -e $@ -U $<
 
 $(TARGET): $(OBJECTS) $(EXPFILE) $(RESOURCE)
-	$(CC) -shared -s -o $@ $(EXPFILE) $(OBJECTS) $(RESOURCE) -nostartfiles -static
+	ar rcs $(ARCHIVE) $(OBJECTS)
+	$(CC) -shared -s -o $@ $(EXPFILE) $(RESOURCE) -nostartfiles -static $(ARCHIVE)
 
 clean:
-	-rm $(OBJECTS) $(TARGET) $(EXPFILE) $(RESOURCE)
+	-rm $(OBJECTS) $(TARGET) $(EXPFILE) $(RESOURCE) $(ARCHIVE)
 
 distclean: clean
 	-rm resource.rc
+
+.PHONY: all clean distclean

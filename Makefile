@@ -7,6 +7,8 @@ all clean distclean:
 
 dist: all
 	-mkdir dist
-	cd dist ; rm -r * ; mkdir $(PRODUCT) ; cd ../ ; \
-	cp $(FILES) dist/$(PRODUCT) ; cd dist ; \
-	zip -9 $(DISTFILE) $(PRODUCT)/*
+	cd dist && rm -r * && mkdir $(PRODUCT) && \
+	cd ../ && cp $(FILES) dist/$(PRODUCT) && \
+	cd dist && zip -9 $(DISTFILE) $(PRODUCT)/*
+
+.PHONY: all clean distclean dist
