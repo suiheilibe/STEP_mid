@@ -29,7 +29,7 @@ extern "C" BOOL WINAPI DllMainCRTStartup(HINSTANCE hinstDLL, DWORD fdwReason, LP
 {
     switch (fdwReason) {
     case DLL_PROCESS_ATTACH:
-        ::LoadString(hinstDLL, IDS_PLUGININFO, plugininfo, sizeof(plugininfo));
+        ::LoadString(hinstDLL, IDS_PLUGININFO, plugininfo, sizeof(plugininfo)/sizeof(plugininfo[0]));
         break;
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
