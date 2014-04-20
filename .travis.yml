@@ -8,11 +8,12 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get -qq install mingw32-x-gcc
   - sudo apt-get -qq install mingw32-x-binutils
-  - sudo apt-get -qq install wine
+#  - sudo apt-get -qq install wine
 
 install:
+  - cp extra/Toolchain-mingw32.cmake ~/
   - export PATH=${PATH}:/opt/mingw32/bin
-  - make test CC=i686-w64-mingw32-g++ CXX=i686-w64-mingw32-g++ WINDRES=i686-w64-mingw32-windres DLLTOOL=i686-w64-mingw32-dlltool AR=i686-w64-mingw32-ar CMAKEFLAGS='-DCMAKE_C_COMPILER=i686-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ -DCMAKE_SHARED_LIBRARY_LINK_C_FLAGS="" -DCMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS="" -DCMAKE_SYSTEM_NAME="Windows" -DCMAKE_RC_COMPILER=i686-w64-mingw32-windres'
+  - make test CC=i686-w64-mingw32-g++ CXX=i686-w64-mingw32-g++ WINDRES=i686-w64-mingw32-windres DLLTOOL=i686-w64-mingw32-dlltool AR=i686-w64-mingw32-ar CMAKEFLAGS='-DCMAKE_TOOLCHAIN_FILE=~/Toolchain-mingw32.cmake'
 
 script:
   - cd test
