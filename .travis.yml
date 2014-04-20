@@ -1,0 +1,19 @@
+language: cpp
+
+compiler:
+  - gcc
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq wine
+  - sudo apt-get install -qq mingw32
+
+install:
+  - make test CC=i586-mingw32msvc-gcc CXX=i586-mingw32msvc-g++ LD=i586-mingw32msvc-ld
+  - cd test
+  - wine ./test
+
+notifications:
+  email:
+    recipients:
+      - ntjapanize@yahoo.co.jp
