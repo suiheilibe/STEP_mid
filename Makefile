@@ -3,7 +3,7 @@ PRODUCT=STEP_mid
 DISTFILE=$(PRODUCT)-$(shell git describe --tags | sed -e 's/^v//g').zip
 
 all clean distclean:
-	make -C src $@
+	+make -C src $@
 
 dist: all
 	-mkdir dist
@@ -12,6 +12,6 @@ dist: all
 	cd dist && zip -9 $(DISTFILE) $(PRODUCT)/*
 
 benchmark test:
-	make -C test $@
+	+make -C test $@
 
 .PHONY: all clean distclean dist benchmark test
