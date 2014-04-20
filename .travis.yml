@@ -6,7 +6,9 @@ compiler:
 before_install:
   - sudo add-apt-repository --yes ppa:tobydox/mingw
   - sudo apt-get update -qq
-  - sudo apt-get -qq install mingw32-x-gcc mingw32-x-binutils wine
+  - sudo apt-get -qq install mingw32-x-binutils
+  - sudo apt-get -qq install mingw32-x-gcc
+  - sudo apt-get -qq install wine
 
 before_script:
   - cp travis/Toolchain-mingw32.cmake ~/
