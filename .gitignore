@@ -3,4 +3,6 @@
 *.a
 *.BAK
 *.exp
+*.exe
+*.swp
 dist/
