@@ -5,7 +5,7 @@ benchmark: test
 	./test
 
 test: test.o FORCE
-	cd ../extra/hayai && cmake . -G 'MSYS Makefiles' && make
+	cd ../extra/hayai && cmake . -G 'Unix Makefiles' && make
 	make -C ../src
 	$(CC) -o test $< ../extra/hayai/src/libhayai_main.a ../src/libSTEP_mid.a
 FORCE:
