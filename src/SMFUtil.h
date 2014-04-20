@@ -1,4 +1,4 @@
-﻿#ifndef _SMFUTIL_H
+#ifndef _SMFUTIL_H
 #define _SMFUTIL_H
 
 #define SIG_SIZE 4
