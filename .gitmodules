@@ -1,0 +1,4 @@
+[submodule "extra/hayai"]
+	path = extra/hayai
+	url = https://github.com/nickbruun/hayai
+	ignore = dirty

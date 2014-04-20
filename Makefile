@@ -11,4 +11,7 @@ dist: all
 	cd ../ && cp $(FILES) dist/$(PRODUCT) && \
 	cd dist && zip -9 $(DISTFILE) $(PRODUCT)/*
 
-.PHONY: all clean distclean dist
+benchmark:
+	make -C test $@
+
+.PHONY: all clean distclean dist benchmark

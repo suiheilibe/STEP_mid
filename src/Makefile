@@ -18,8 +18,8 @@ $(EXPFILE): $(OBJECTS)
 	dlltool -e $@ -U $<
 
 $(TARGET): $(OBJECTS) $(EXPFILE) $(RESOURCE)
-	ar rcs $(ARCHIVE) $(OBJECTS)
-	$(CC) -shared -s -o $@ $(EXPFILE) $(RESOURCE) -nostartfiles -static $(ARCHIVE)
+	ar rcs $(ARCHIVE) STEP_mid.o SMFUtil.o
+	$(CC) -shared -s -o $@ $(EXPFILE) $(RESOURCE) STEP_SDK/STEPlugin.o $(ARCHIVE) -nostartfiles -static
 
 clean:
 	-rm $(OBJECTS) $(TARGET) $(EXPFILE) $(RESOURCE) $(ARCHIVE)
