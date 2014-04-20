@@ -8,7 +8,7 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get -qq install mingw32-x-gcc
   - sudo apt-get -qq install mingw32-x-binutils
-#  - sudo apt-get -qq install wine
+  - sudo apt-get -qq install wine
 
 install:
   - cp extra/Toolchain-mingw32.cmake ~/
