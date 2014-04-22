@@ -23,13 +23,14 @@ static UINT nFileTypeMID;
 static void (*saSetFunc[])(FILE_INFO*,LPCTSTR) = {SetComment, SetArtistName, SetTrackName};
 static LPCTSTR (*saGetFunc[])(FILE_INFO*) = {GetComment, GetArtistName, GetTrackName};
 
+static HINSTANCE hDLL;
 static TCHAR plugininfo[256];
 
 extern "C" BOOL WINAPI DllMainCRTStartup(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
     switch (fdwReason) {
     case DLL_PROCESS_ATTACH:
-        ::LoadString(hinstDLL, IDS_PLUGININFO, plugininfo, sizeof(plugininfo)/sizeof(plugininfo[0]));
+        hDLL = hinstDLL;
         break;
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
@@ -67,6 +68,8 @@ STEP_API bool WINAPI STEPInit(UINT pID, LPCTSTR szPluginFolder)
 {
     if (Initialize() == false)	return false;
     nPluginID = pID;
+
+    LoadString(hDLL, IDS_PLUGININFO, plugininfo, sizeof(plugininfo)/sizeof(plugininfo[0]));
     // INIファイルの読み込み
     /*
     strINI = szPluginFolder;
