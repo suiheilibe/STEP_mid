@@ -16,6 +16,7 @@
 #endif
 
 #define PLUGINNAME TEXT("STEP_mid")
+#define META_BUFFER_SIZE 1024
 
 static UINT nPluginID;
 static UINT nFileTypeMID;
@@ -43,19 +44,17 @@ extern "C" BOOL WINAPI DllMainCRTStartup(HINSTANCE hinstDLL, DWORD fdwReason, LP
 void readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, MetaEvent *events, int type)
 {
     MetaEvent *p = &events[type];
+    TCHAR buf[META_BUFFER_SIZE];
     if ( p->offset >= 0 )
     {
         int length = p->length;
-        LPTSTR buf = (LPTSTR)malloc(length + 1);
-        if ( !buf )
-        {
-            return;
+        if (length >= META_BUFFER_SIZE) {
+            length = META_BUFFER_SIZE - 1;
         }
         fseek(fp, p->offset, SEEK_SET);
         fread(buf, length, 1, fp);
         buf[length] = '\0';
         (saSetFunc[type])(pFileMP3, buf);
-        free(buf);
     }
 }
 
@@ -133,11 +132,11 @@ STEP_API UINT WINAPI STEPGetColumnMax(UINT nFormat, COLUMNTYPE nColumn, bool isE
     switch (nColumn)
     {
     case COLUMN_TRACK_NAME:
-        return 1024;
+        return META_BUFFER_SIZE - 1;
     case COLUMN_ARTIST_NAME:
-        return 1024;
+        return META_BUFFER_SIZE - 1;
     case COLUMN_COMMENT:
-        return 1024;
+        return META_BUFFER_SIZE - 1;
     default:
         break;
     }
@@ -151,7 +150,8 @@ STEP_API UINT WINAPI STEPLoad(FILE_INFO *pFileMP3, LPCTSTR szExt)
     {
         return STEP_ERROR;
     }
-    MetaEvent *events = (MetaEvent *)malloc(sizeof(MetaEvent) * META_MAX);
+    MetaEvent events[sizeof(MetaEvent) * META_MAX];
+    memset(events, 0, sizeof(events));
     if ( !events )
     {
         fclose(fp);
@@ -173,8 +173,6 @@ STEP_API UINT WINAPI STEPLoad(FILE_INFO *pFileMP3, LPCTSTR szExt)
     {
         ret = STEP_UNKNOWN_FORMAT;
     }
-    // 将来書き込めるようにするときはfreeしないようにする
-    free(events);
     fclose(fp);
     return ret;
 
