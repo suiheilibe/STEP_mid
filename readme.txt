@@ -1,72 +1,75 @@
-STEP_mid Version 0.1.0
+STEP_mid Version 0.1.1
 
-[�T�v]
+[概要]
 
-STEP��MIDI�t�@�C���p�v���O�C���ł��B
-STEP_mid.ste��K���ȂƂ���ɒu���āASTEP�̃v���O�C���ݒ肩��C���X�g�[�����Ă��������B
-Windows Server 2008 R2���STEP_M(http://mimumimu.net/)�œ�����m�F���Ă��܂��B
-����ȃt�@�C���ւ̈ˑ��͂Ȃ��̂�Windows XP��Windows 7�ł������Ǝv���܂��B
+STEPのMIDIファイル用プラグインです。
+STEP_mid.steを適当なところに置いて、STEPのプラグイン設定からインストールしてください。
+Windows Server 2008 R2上のSTEP_M(http://mimumimu.net/)で動作を確認しています。
+特殊なファイルへの依存はないのでWindows XPやWindows 7でも動くと思います。
 
-���݂̂Ƃ���̓��^�f�[�^�̓ǂݍ��݂����ɑΉ����Ă���A
-�t�@�C�����X�V���悤�Ƃ���ƃG���[�ɂȂ�܂��B
+現在のところはメタデータの読み込みだけに対応しており、
+ファイルを更新しようとするとエラーになります。
 
-�V�[�P���X�����g���b�N���A�R�s�[���C�g���A�[�e�B�X�g���A�e�L�X�g���R�����g�ɑΉ����܂��B
-��������ǂݍ��܂��͍̂ŏ��Ɍ����������̂����ł��B
-����ɁA�V�[�P���X���͍ŏ��̃g���b�N�ɂȂ��ƃg���b�N���Ƃ͔F������Ȃ��悤�ɂȂ��Ă��܂��B
+シーケンス名がトラック名、コピーライトがアーティスト名、テキストがコメントに対応します。
+いずれも読み込まれるのは最初に見つかったものだけです。
+さらに、シーケンス名は最初のトラックにないとトラック名とは認識されないようになっています。
 
-[���C�Z���X]
+[ライセンス]
 
-���L�̃t�@�C���ɂ�GNU General Public License v2.0���K�p����܂��B
+下記のファイルにはGNU General Public License v2.0が適用されます。
     STEP_mid.ste
-    src/STEP_SDK/* (�\�[�X�f�B�X�g���r���[�V�����̂�)
-�Ĕz�z����ς��s���ꍇ�͓���COPYING(�p��)�L�ڂ̏����ɏ]���Ă��������B
+    src/STEP_SDK/* (ソースディストリビューションのみ)
+再配布や改変を行う場合は同梱COPYING(英語)記載の条件に従ってください。
 
-����ȊO�̃t�@�C����NYSL Version 0.9982(http://www.kmonos.net/nysl/)���K�p����܂��B
-�ȉ����C�Z���X���S���ł��B
-�v�͎ς�Ȃ�Ă��Ȃ�D���ɂ��Ă���Ƃ������Ƃł��B
+それ以外のファイルはNYSL Version 0.9982(http://www.kmonos.net/nysl/)が適用されます。
+以下ライセンス文全文です。
+要は煮るなり焼くなり好きにしてくれということです。
 
-	A. �{�\�t�g�E�F�A�� Everyone'sWare �ł��B���̃\�t�g����ɂ�����l��l���A
-	   �������̍�������̂������̂Ɠ����悤�ɁA���R�ɗ��p���邱�Ƃ��o���܂��B
+	A. 本ソフトウェアは Everyone'sWare です。このソフトを手にした一人一人が、
+	   ご自分の作ったものを扱うのと同じように、自由に利用することが出来ます。
 
-	  A-1. �t���[�E�F�A�ł��B��҂���͎g�p������v�����܂���B
-	  A-2. �L��������}�̂̔@�����킸�A���R�ɓ]�ځE�Ĕz�z�ł��܂��B
-	  A-3. �����Ȃ��ނ� ���ρE���v���O�����ł̗��p ���s���Ă��\���܂���B
-	  A-4. �ύX�������̂╔���I�Ɏg�p�������̂́A���Ȃ��̂��̂ɂȂ�܂��B
-	       ���J����ꍇ�́A���Ȃ��̖��O�̉��ōs���ĉ������B
+	  A-1. フリーウェアです。作者からは使用料等を要求しません。
+	  A-2. 有料無料や媒体の如何を問わず、自由に転載・再配布できます。
+	  A-3. いかなる種類の 改変・他プログラムでの利用 を行っても構いません。
+	  A-4. 変更したものや部分的に使用したものは、あなたのものになります。
+	       公開する場合は、あなたの名前の下で行って下さい。
 
-	B. ���̃\�t�g�𗘗p���邱�Ƃɂ���Đ��������Q���ɂ��āA��҂�
-	   �ӔC�𕉂�Ȃ����̂Ƃ��܂��B�e���̐ӔC�ɂ����Ă����p�������B
+	B. このソフトを利用することによって生じた損害等について、作者は
+	   責任を負わないものとします。各自の責任においてご利用下さい。
 
-	C. ����Ґl�i���� suiheilibe �ɋA�����܂��B���쌠�͕������܂��B
+	C. 著作者人格権は suiheilibe に帰属します。著作権は放棄します。
 
-	D. �ȏ�̂R���́A�\�[�X�E���s�o�C�i���̑o���ɓK�p����܂��B
+	D. 以上の３項は、ソース・実行バイナリの双方に適用されます。
 
-[�\�[�X�t�@�C���z�z�ɂ���]
+[ソースファイル配布について]
 
 https://github.com/suiheilibe/STEP_mid
-�ɂ�Git���|�W�g�������J���Ă��܂��B
+にてGitリポジトリを公開しています。
 
-[�r���h���@]
+[ビルド方法]
 
-���݂̂Ƃ���MSYS+MinGW�����O��ƂȂ��Ă��܂��B
-Linux�Ȃǂł̃N���X�R���p�C���̓\�[�X�f�B�X�g���r���[�V��������.travis.yml���Q�l�ɂȂ邩������܂���B
-�g�b�v�f�B���N�g���ł�make all���s�ɂ��src/STEP_mid.ste����������܂��B
-make dist�̎��s�ɂ��z�z�pzip�A�[�J�C�u��dist�f�B���N�g���ɐ�������܂�(git,zip���K�v)�B
+現在のところMSYS+MinGW環境が前提となっています。
+Linuxなどでのクロスコンパイルはソースディストリビューション中の.travis.ymlが参考になるかもしれません。
+トップディレクトリでのmake all実行によりsrc/STEP_mid.steが生成されます。
+make distの実行により配布用zipアーカイブがdistディレクトリに生成されます(git,zipが必要)。
 
-[�X�V����]
+[更新履歴]
+0.1.1 (14/04/21)
+ビルドオプションの変更
+
 0.1.0 (14/04/21)
-�o�[�W�����������Windows���\�[�X��
-����t�@�C���ȊO�̃��C�Z���X��NYSL�ɕύX
+バージョン文字列をWindowsリソース化
+特定ファイル以外のライセンスをNYSLに変更
 
 0.03 (10/07/27)
-�\�[�X�R�[�h����
-MIDI�t�@�C���̑�����r���őł��؂�悤�ɂ���
+ソースコード整理
+MIDIファイルの走査を途中で打ち切るようにした
 
 0.02 (10/07/25)
-���������[�N�C��
+メモリリーク修正
 
 0.01 (10/07/25)
-�Ƃ肠�����ǂݍ��݂���
-�V�[�P���X�����g���b�N���A�R�s�[���C�g���A�[�e�B�X�g���A�e�L�X�g���R�����g�ɑΉ����܂�
-��������ǂݍ��܂��͍̂ŏ��Ɍ����������̂����ł�
-����ɁA�V�[�P���X���͍ŏ��̃g���b�N�ɂȂ��ƃg���b�N���Ƃ͔F������Ȃ��悤�ɂȂ��Ă��܂�
+とりあえず読み込みだけ
+シーケンス名がトラック名、コピーライトがアーティスト名、テキストがコメントに対応します
+いずれも読み込まれるのは最初に見つかったものだけです
+さらに、シーケンス名は最初のトラックにないとトラック名とは認識されないようになっています
