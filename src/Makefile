@@ -1,5 +1,5 @@
 CC=g++
-CXXFLAGS=-I. -ISTEP_SDK/ -Wall -O2 -m32
+CXXFLAGS=-I. -ISTEP_SDK/ -Wall -Os -m32
 OBJECTS=STEP_mid.o SMFUtil.o STEP_SDK/STEPlugin.o
 RESOURCE=resource.o
 ARCHIVE=libSTEP_mid.a
@@ -22,7 +22,7 @@ $(EXPFILE): $(OBJECTS)
 
 $(TARGET): $(OBJECTS) $(EXPFILE) $(RESOURCE)
 	$(AR) rcs $(ARCHIVE) STEP_mid.o SMFUtil.o
-	$(CC) -shared -s -o $@ $(EXPFILE) $(RESOURCE) STEP_SDK/STEPlugin.o $(ARCHIVE) -nostartfiles -static
+	$(CC) -shared -s -o $@ $(EXPFILE) $(RESOURCE) STEP_SDK/STEPlugin.o $(ARCHIVE) -static
 
 clean:
 	-rm $(OBJECTS) $(TARGET) $(EXPFILE) $(RESOURCE) $(ARCHIVE)
