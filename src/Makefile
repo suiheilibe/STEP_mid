@@ -25,9 +25,8 @@ $(TARGET): $(OBJECTS) $(EXPFILE) $(RESOURCE)
 	$(CC) -shared -s -o $@ $(EXPFILE) $(RESOURCE) STEP_SDK/STEPlugin.o $(ARCHIVE) -static
 
 clean:
-	-rm $(OBJECTS) $(TARGET) $(EXPFILE) $(RESOURCE) $(ARCHIVE)
+	-rm $(OBJECTS) $(TARGET) $(EXPFILE) $(RESOURCE) $(ARCHIVE) resource.rc
 
 distclean: clean
-	-rm resource.rc
 
 .PHONY: all clean distclean
