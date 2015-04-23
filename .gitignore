@@ -6,4 +6,4 @@
 *.exe
 *.swp
 dist/
-src/resource.rc
+build/
