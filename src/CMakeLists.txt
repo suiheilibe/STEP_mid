@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
 
-include_directories(STEP_SDK)
+include_directories(STEP_SDK ${CMAKE_CURRENT_SOURCE_DIR})
 set(SRCS STEP_mid.cpp SMFUtil.cpp STEP_SDK/STEPlugin.cpp)
 set(STEP_mid_VERSION 0.1.1)
-set(RCFILE "${CMAKE_CURRENT_SOURCE_DIR}/resource.rc")
+set(RCFILE "${CMAKE_CURRENT_BINARY_DIR}/resource.rc")
 configure_file(resource.rc.in ${RCFILE})
 
 if(NOT CMAKE_DLLTOOL)
