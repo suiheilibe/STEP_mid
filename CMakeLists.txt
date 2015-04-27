@@ -3,7 +3,11 @@ cmake_minimum_required(VERSION 2.8)
 project(STEP_mid)
 enable_testing()
 
-set(STEP_mid_VERSION 0.1.1)
+execute_process(
+  COMMAND git describe --tags
+  OUTPUT_VARIABLE STEP_mid_VERSION
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
 
 if(NOT CMAKE_DLLTOOL)
   set(CMAKE_DLLTOOL dlltool)
