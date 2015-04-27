@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 project(STEP_mid)
+enable_testing()
 
 if(NOT CMAKE_DLLTOOL)
   set(CMAKE_DLLTOOL dlltool)
