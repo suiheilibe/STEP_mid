@@ -17,4 +17,4 @@ script:
   - mkdir build && cd build
   - cmake -DCMAKE_TOOLCHAIN_FILE=~/Toolchain-mingw32.cmake ..
   - make -j4
-  - cd test && wine ./STEP_mid.test
+  - cd test && wine ./STEP_mid.test.exe
