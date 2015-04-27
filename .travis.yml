@@ -5,13 +5,16 @@ compiler:
 
 before_install:
   - sudo add-apt-repository --yes ppa:tobydox/mingw-x-precise
+  - sudo add-apt-repository --yes ppa:kalakris/cmake
   - sudo apt-get update -qq
-  - sudo apt-get -qq install mingw32-x-binutils mingw32-x-gcc wine
+  - sudo apt-get install -qq mingw32-x-binutils mingw32-x-gcc wine cmake
 
 before_script:
   - cp travis/Toolchain-mingw32.cmake ~/
   - export PATH=${PATH}:/opt/mingw32/bin
 
 script:
-  - make test CC=i686-w64-mingw32-g++ CXX=i686-w64-mingw32-g++ WINDRES=i686-w64-mingw32-windres DLLTOOL=i686-w64-mingw32-dlltool AR=i686-w64-mingw32-ar CMAKEFLAGS='-DCMAKE_TOOLCHAIN_FILE=~/Toolchain-mingw32.cmake'
-  - cd test && wine ./test
+  - mkdir build && cd build
+  - cmake -DCMAKE_TOOLCHAIN_FILE=~/Toolchain-mingw32.cmake ..
+  - make -j4
+  - cd test && wine ./STEP_mid.test
