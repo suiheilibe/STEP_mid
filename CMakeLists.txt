@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 2.8)
 project(STEP_mid)
 enable_testing()
 
+set(STEP_mid_VERSION 0.1.1)
+
 if(NOT CMAKE_DLLTOOL)
   set(CMAKE_DLLTOOL dlltool)
 endif()
@@ -20,3 +22,11 @@ endif()
 add_subdirectory(extra/hayai)
 add_subdirectory(src)
 add_subdirectory(test)
+
+install(FILES COPYING readme.txt DESTINATION .)
+
+set(CPACK_GENERATOR ZIP)
+set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
+set(CPACK_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}-${STEP_mid_VERSION}")
+set(CPACK_STRIP_FILES TRUE)
+include(CPack)

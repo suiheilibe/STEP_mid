@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 2.8)
 include_directories(STEP_SDK ${CMAKE_CURRENT_SOURCE_DIR})
 set(SRCS STEP_mid.cpp SMFUtil.cpp)
 add_library(STEP_mid.objs OBJECT ${SRCS})
-set(STEP_mid_VERSION 0.1.1)
 set(RCFILE "${CMAKE_CURRENT_BINARY_DIR}/resource.rc")
 configure_file(resource.rc.in ${RCFILE})
 
@@ -19,3 +18,5 @@ else()
 endif()
 
 set_target_properties(STEP_mid PROPERTIES PREFIX "" SUFFIX .ste)
+
+install(TARGETS STEP_mid LIBRARY DESTINATION .)
