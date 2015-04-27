@@ -6,6 +6,10 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/../extra/hayai/src
 )
 
+if(MINGW)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
+endif()
+
 add_executable(STEP_mid.test test.cpp $<TARGET_OBJECTS:STEP_mid.objs>)
 target_link_libraries(STEP_mid.test ${CMAKE_CURRENT_BINARY_DIR}/../extra/hayai/src/libhayai_main.a)
 add_dependencies(STEP_mid.test hayai_main)
