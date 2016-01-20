@@ -1,4 +1,4 @@
-STEP_mid Version 0.1.1
+STEP_mid Version 0.1.2
 
 [概要]
 
@@ -48,12 +48,19 @@ https://github.com/suiheilibe/STEP_mid
 
 [ビルド方法]
 
-現在のところMSYS+MinGW環境が前提となっています。
+CMakeを使ってビルドできます。
+MSYS+MinGW環境では、レポジトリのトップにて
+
+$ mkdir build
+$ cd build
+$ cmake .. -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE="Release"
+
 Linuxなどでのクロスコンパイルはソースディストリビューション中の.travis.ymlが参考になるかもしれません。
 トップディレクトリでのmake all実行によりsrc/STEP_mid.steが生成されます。
 make distの実行により配布用zipアーカイブがdistディレクトリに生成されます(git,zipが必要)。
 
 [更新履歴]
+
 0.1.1 (15/04/20)
 ビルドオプションの変更
 
