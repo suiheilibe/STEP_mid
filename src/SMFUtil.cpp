@@ -41,7 +41,7 @@ static void writeDelta(FILE *fp, int val)
         int a[5];
         int i;
 
-        for (i = 0; ; i++)
+        for (i = 0; i < 5; i++)
         {
             a[i] = val & 0x7f;
             val >>= 7;
