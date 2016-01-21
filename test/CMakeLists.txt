@@ -11,8 +11,7 @@ if(MINGW)
 endif()
 
 add_executable(STEP_mid.test test.cpp $<TARGET_OBJECTS:STEP_mid.objs>)
-target_link_libraries(STEP_mid.test ${CMAKE_CURRENT_BINARY_DIR}/../extra/hayai/src/libhayai_main.a)
-add_dependencies(STEP_mid.test hayai_main)
+target_link_libraries(STEP_mid.test hayai_main)
 
 file(COPY test.mid DESTINATION .)
 
