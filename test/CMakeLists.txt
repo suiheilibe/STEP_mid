@@ -3,10 +3,9 @@ cmake_minimum_required(VERSION 2.8)
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/../src
   ${CMAKE_CURRENT_SOURCE_DIR}/../src/STEP_SDK
-  ${CMAKE_CURRENT_SOURCE_DIR}/../extra/hayai/src
+  ${CMAKE_CURRENT_SOURCE_DIR}/../external/hayai/src
 )
-
-link_directories(${CMAKE_CURRENT_BINARY_DIR}/hayai)
+link_directories(${CMAKE_CURRENT_BINARY_DIR}/lib)
 
 if(MINGW)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
@@ -23,8 +22,9 @@ include(ExternalProject)
 
 ExternalProject_Add(
   hayai
-  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../extra/hayai/src
-  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR} -DINSTALL_LIB_DIR=hayai
+  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../external/hayai/src
+  INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}
+  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR} -DINSTALL_LIB_DIR=lib
 )
 
 add_dependencies(STEP_mid.test hayai)
