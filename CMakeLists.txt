@@ -23,10 +23,8 @@ if(MSVC)
   endforeach(flag_var)
 endif()
 
-add_subdirectory(extra/hayai)
 add_subdirectory(src)
 add_subdirectory(test)
-
 install(FILES COPYING readme.txt DESTINATION .)
 
 set(CPACK_GENERATOR ZIP)
