@@ -24,6 +24,7 @@ ExternalProject_Add(
   hayai
   SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../external/hayai"
   CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}"
+             "-DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}"
 )
 
 add_dependencies(STEP_mid.test hayai)
