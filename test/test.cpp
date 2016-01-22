@@ -3,7 +3,7 @@
 
 #include <windows.h>
 
-#include <hayai.hpp>
+#include <hayai/hayai.hpp>
 
 #include "STEPlugin.h"
 
