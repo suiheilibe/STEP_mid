@@ -49,14 +49,19 @@ https://github.com/suiheilibe/STEP_mid
 [ビルド方法]
 
 CMakeを使ってビルドできます。
-MSYS+MinGW環境では、レポジトリのトップにて
+MSYS2+MinGW環境では、レポジトリのトップにて
 
-$ mkdir build
-$ cd build
-$ cmake .. -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE="Release"
+    $ mkdir build
+    $ cd build
+    $ cmake .. -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Release
+    $ cmake --build .
+
+build/src ディレクトリに STEP_mid.ste が生成されます。
+そのままcpackコマンドを実行することにより配布用ZIPファイルを生成できます
+
+    $ cpack
 
 Linuxなどでのクロスコンパイルはソースディストリビューション中の.travis.ymlが参考になるかもしれません。
-トップディレクトリでのmake all実行によりsrc/STEP_mid.steが生成されます。
 make distの実行により配布用zipアーカイブがdistディレクトリに生成されます(git,zipが必要)。
 
 [更新履歴]
