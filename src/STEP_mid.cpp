@@ -158,7 +158,7 @@ STEP_API UINT WINAPI STEPLoad(FILE_INFO *pFileMP3, LPCTSTR szExt)
         return STEP_ERROR;
     }
     UINT ret;
-    if ( findMetaEvents(fp, events) )
+    if ( SMFUtil::findMetaEvents(fp, events) )
     {
         int i;
         for (i = 0; i < META_MAX; i++)

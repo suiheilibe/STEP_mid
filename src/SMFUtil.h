@@ -21,6 +21,10 @@ typedef struct _MetaEvent
     int length;
 } MetaEvent;
 
-bool findMetaEvents(FILE *fp, MetaEvent *events);
+class SMFUtil
+{
+public:
+    static bool findMetaEvents(FILE *fp, MetaEvent *events);
+};
 
 #endif

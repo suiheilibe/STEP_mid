@@ -32,7 +32,7 @@ public:
 
 BENCHMARK_F(SMFUtilFixture, findMetaEvents, 10, 100)
 {
-    findMetaEvents(fp, events);
+    SMFUtil::findMetaEvents(fp, events);
 }
 
 class STEPMidFixture: public hayai::Fixture
@@ -42,7 +42,7 @@ public:
     {
         this->fp = fopen("test.mid", TEXT("rb"));
         this->events = (MetaEvent *)malloc(sizeof(MetaEvent) * META_MAX);
-        findMetaEvents(this->fp, this->events);
+        SMFUtil::findMetaEvents(this->fp, this->events);
     }
     
     virtual void TearDown()

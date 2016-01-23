@@ -64,7 +64,7 @@ static void writeDelta(FILE *fp, int val)
     }
 }
 
-bool findMetaEvents(FILE *fp, MetaEvent *events)
+bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
 {
     int i;
     char buf[SIG_SIZE];
