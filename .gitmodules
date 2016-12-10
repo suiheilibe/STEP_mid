@@ -1,7 +1,3 @@
-[submodule "extra/hayai"]
-	path = extra/hayai
-	url = https://github.com/nickbruun/hayai
-	ignore = dirty
 [submodule "external/hayai"]
 	path = external/hayai
 	url = https://github.com/nickbruun/hayai
