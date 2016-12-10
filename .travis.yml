@@ -10,11 +10,10 @@ before_install:
   - sudo apt-get install -qq mingw32-x-binutils mingw32-x-gcc wine cmake
 
 before_script:
-  - cp travis/Toolchain-mingw32.cmake ~/
   - export PATH=${PATH}:/opt/mingw32/bin
 
 script:
   - mkdir build && cd build
-  - cmake -DCMAKE_TOOLCHAIN_FILE=~/Toolchain-mingw32.cmake -DCMAKE_BUILD_TYPE=Release ..
+  - cmake -DCMAKE_TOOLCHAIN_FILE=~/cmake/Toolchain-mingw32.cmake -DCMAKE_BUILD_TYPE=Release ..
   - make -j4 VERBOSE=1
   - cd test && wine ./STEP_mid.test.exe
