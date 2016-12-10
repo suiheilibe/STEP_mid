@@ -3,7 +3,7 @@
 
 #include <windows.h>
 
-#include <hayai/hayai.hpp>
+#include "CppUTest/CommandLineTestRunner.h"
 
 #include "STEPlugin.h"
 
@@ -11,30 +11,35 @@
 
 extern void readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, MetaEvent *events, int type);
 
-class SMFUtilFixture: public hayai::Fixture
+TEST_GROUP(SMFUtilTestGroup)
 {
-public:
-    virtual void SetUp()
+    TEST_SETUP()
     {
-        this->fp = fopen("test.mid", TEXT("rb"));
-        this->events = (MetaEvent *)malloc(sizeof(MetaEvent) * META_MAX);
+        fp = fopen("test.mid", TEXT("rb"));
+        events = (MetaEvent *)malloc(sizeof(MetaEvent) * META_MAX);
     }
     
-    virtual void TearDown()
+    TEST_TEARDOWN()
     {
-        free(this->events);
-        fclose(this->fp);
+        free(events);
+        fclose(fp);
     }
     
     FILE *fp;
     MetaEvent *events;
 };
 
-BENCHMARK_F(SMFUtilFixture, findMetaEvents, 10, 100)
+TEST(SMFUtilTestGroup, findMetaEvents)
 {
     SMFUtil::findMetaEvents(fp, events);
 }
 
+int main(int argc, char *argv[])
+{
+    return RUN_ALL_TESTS(argc, argv);
+}
+
+/*
 class STEPMidFixture: public hayai::Fixture
 {
 public:
@@ -74,7 +79,7 @@ BENCHMARK(STEP_mid, STEPLoad, 10, 100)
 {
     STEPLoad(NULL, "");
 }
-
+*/
 LPCTSTR GetValue(FILE_INFO* pInfo, FIELDTYPE nField)
 {
     return "./test.mid";

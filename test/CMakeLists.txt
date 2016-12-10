@@ -12,7 +12,7 @@ if(MINGW)
 endif()
 
 add_executable(STEP_mid.test test.cpp $<TARGET_OBJECTS:STEP_mid.objs>)
-target_link_libraries(STEP_mid.test hayai_main)
+target_link_libraries(STEP_mid.test CppUTest)
 
 file(COPY test.mid DESTINATION .)
 
@@ -21,10 +21,10 @@ add_test(NAME "STEP_mid" COMMAND STEP_mid.test)
 include(ExternalProject)
 
 ExternalProject_Add(
-  hayai
-  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../external/hayai"
+  cpputest
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../external/cpputest"
   CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}"
              "-DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}"
 )
 
-add_dependencies(STEP_mid.test hayai)
+add_dependencies(STEP_mid.test cpputest)
