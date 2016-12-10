@@ -14,6 +14,6 @@ before_script:
 
 script:
   - mkdir build && cd build
-  - cmake -DCMAKE_TOOLCHAIN_FILE=~/cmake/Toolchain-mingw32.cmake -DCMAKE_BUILD_TYPE=Release ..
+  - cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-mingw32.cmake -DCMAKE_BUILD_TYPE=Release ..
   - make -j4 VERBOSE=1
   - cd test && wine ./STEP_mid.test.exe
