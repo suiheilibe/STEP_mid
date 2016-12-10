@@ -25,6 +25,7 @@ ExternalProject_Add(
   SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../external/cpputest"
   CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}"
              "-DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}"
+             "-DTESTS=OFF"
 )
 
 add_dependencies(STEP_mid.test cpputest)
