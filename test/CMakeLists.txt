@@ -12,7 +12,7 @@ if(MINGW)
 endif()
 
 add_executable(STEP_mid.test test.cpp $<TARGET_OBJECTS:STEP_mid.objs>)
-target_link_libraries(STEP_mid.test CppUTest)
+target_link_libraries(STEP_mid.test CppUTest pthread)
 
 file(COPY test.mid DESTINATION .)
 
