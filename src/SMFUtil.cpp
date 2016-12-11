@@ -99,7 +99,11 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
         fseek(fp, 4, SEEK_CUR);// サイズは無視
         for (;;)
         {
-            readDelta(fp);// デルタタイムは読み飛ばす
+            // デルタタイムは読み飛ばす
+            if ( readDelta(fp) < 0 )
+            {
+                return false;
+            }
             int c = fgetc(fp);
             if ( c == EOF )
             {
