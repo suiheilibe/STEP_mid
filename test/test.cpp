@@ -13,13 +13,13 @@ extern void readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, MetaEvent *events, int 
 
 TEST_GROUP(SMFUtilTestGroup)
 {
-    TEST_SETUP()
+    void setup()
     {
         fp = fopen("test.mid", TEXT("rb"));
         events = (MetaEvent *)malloc(sizeof(MetaEvent) * META_MAX);
     }
     
-    TEST_TEARDOWN()
+    void teardown()
     {
         free(events);
         fclose(fp);
@@ -31,12 +31,12 @@ TEST_GROUP(SMFUtilTestGroup)
 
 TEST(SMFUtilTestGroup, findMetaEvents)
 {
-    SMFUtil::findMetaEvents(fp, events);
+    CHECK(SMFUtil::findMetaEvents(fp, events));
 }
 
 int main(int argc, char *argv[])
 {
-    return RUN_ALL_TESTS(argc, argv);
+    return CommandLineTestRunner::RunAllTests(argc, argv);
 }
 
 /*
