@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.11)
 
 project(STEP_mid)
 enable_testing()
@@ -22,6 +22,10 @@ if(MSVC)
     endif(${flag_var} MATCHES "/MD")
   endforeach(flag_var)
 endif()
+
+set(target STEP_mid)
+set(target_lib "${target_name}.lib")
+set(target_objs "${target_name}.objs")
 
 add_subdirectory(src)
 add_subdirectory(test)

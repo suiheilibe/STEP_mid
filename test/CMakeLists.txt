@@ -1,11 +1,14 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.11)
 
-set(testlib CppUTest)
+set(test_lib CppUTest)
 if(MINGW)
-  list(APPEND testlib pthread)
+  list(APPEND test_lib pthread)
 endif()
-set(testlib_project cpputest)
-set(testlib_project_args "-DTESTS=OFF")
+set(test_lib_project cpputest)
+set(test_lib_project_args "-DTESTS=OFF")
+
+set(test_target "${target}.test")
+set(test_name "STEP_mid")
 
 include_directories(
   "${CMAKE_CURRENT_SOURCE_DIR}/../src"
@@ -18,21 +21,21 @@ if(MINGW)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
 endif()
 
-add_executable(STEP_mid.test test.cpp $<TARGET_OBJECTS:STEP_mid.objs>)
-target_link_libraries(STEP_mid.test ${testlib})
+add_executable(${test_target} test.cpp $<TARGET_OBJECTS:${target_objs}>)
+target_link_libraries(${test_target} ${test_lib})
 
 file(COPY test.mid DESTINATION .)
 
-add_test(NAME "STEP_mid" COMMAND STEP_mid.test)
+add_test(NAME ${test_name} COMMAND ${test_target})
 
 include(ExternalProject)
 
 ExternalProject_Add(
-  ${testlib_project}
-  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../external/${testlib_project}"
+  ${test_lib_project}
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../external/${test_lib_project}"
   CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}"
              "-DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}"
-             ${testlib_project_args}
+             ${test_lib_project_args}
 )
 
-add_dependencies(STEP_mid.test ${testlib_project})
+add_dependencies(${test_target} ${test_lib_project})
