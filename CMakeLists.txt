@@ -27,8 +27,8 @@ elseif(MSVC)
 endif()
 
 set(target STEP_mid)
-set(target_lib "${target_name}.lib")
-set(target_objs "${target_name}.objs")
+set(target_lib "${target}.lib")
+set(target_objs "${target}.objs")
 
 add_subdirectory(src)
 add_subdirectory(test)
