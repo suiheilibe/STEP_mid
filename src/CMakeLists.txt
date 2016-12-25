@@ -3,11 +3,12 @@ cmake_minimum_required(VERSION 2.8.11)
 include_directories(
   STEP_SDK
   ${CMAKE_CURRENT_SOURCE_DIR})
-add_library(${target_objs} OBJECT
-  STEP_mid.cpp
-  SMFUtil.cpp)
 set(rcfile "${CMAKE_CURRENT_BINARY_DIR}/resource.rc")
 configure_file(resource.rc.in ${rcfile})
+add_library(${target_objs} OBJECT
+  ${rcfile}
+  STEP_mid.cpp
+  SMFUtil.cpp)
 
 if(MINGW)
   set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -static")
@@ -19,14 +20,12 @@ if(MINGW)
     DEPENDS ${target_lib}
   )
   add_library(${target} MODULE
-    ${rcfile}
     STEP_SDK/STEPlugin.cpp
     ${expfile}
   )
   target_link_libraries(${target} ${target_lib})
 else()
   add_library(${target} MODULE
-    ${rcfile}
     STEP_SDK/STEPlugin.cpp
     $<TARGET_OBJECTS:${target_objs}>
   )
