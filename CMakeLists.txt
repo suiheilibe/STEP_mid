@@ -13,7 +13,10 @@ if(NOT CMAKE_DLLTOOL)
   set(CMAKE_DLLTOOL dlltool)
 endif()
 
-if(MSVC)
+# TODO: Separate this block to an individual file
+if(MINGW)
+  set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -static")
+elseif(MSVC)
   foreach(flag_var
           CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
           CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)

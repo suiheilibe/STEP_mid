@@ -11,7 +11,6 @@ add_library(${target_objs} OBJECT
   SMFUtil.cpp)
 
 if(MINGW)
-  set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -static")
   add_library(${target_lib} STATIC $<TARGET_OBJECTS:${target_objs}>)
   set(expfile "${CMAKE_CURRENT_BINARY_DIR}/STEP_mid.exp.obj")
   add_custom_command(
