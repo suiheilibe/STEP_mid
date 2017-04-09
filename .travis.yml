@@ -10,9 +10,11 @@ addons:
   apt:
     packages:
     - gcc-mingw-w64
-    - wine
+    - wine1.6
 
 script:
+  - cmake --version
+  - i686-w64-mingw32-gcc --version
   - mkdir build && cd build
   - cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-mingw32.cmake -DCMAKE_BUILD_TYPE=Release ..
   - make -j4 VERBOSE=1
