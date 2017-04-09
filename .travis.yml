@@ -10,6 +10,7 @@ addons:
   apt:
     packages:
     - gcc-mingw-w64-i686
+    - binutils-mingw-w64-i686
     - wine1.4
     - cmake
 
