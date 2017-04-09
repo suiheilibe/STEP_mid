@@ -5,6 +5,8 @@ language: cpp
 
 addons:
   apt:
+    sources:
+    - kalakris-cmake
     packages:
     - gcc-mingw-w64-i686
     - g++-mingw-w64-i686
