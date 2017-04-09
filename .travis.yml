@@ -1,16 +1,16 @@
+dist: trusty
+sudo: false
+
 language: cpp
 
 compiler:
   - gcc
 
-before_install:
-  - sudo add-apt-repository --yes ppa:tobydox/mingw-x-precise
-  - sudo add-apt-repository --yes ppa:kalakris/cmake
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq mingw32-x-binutils mingw32-x-gcc wine cmake
-
-before_script:
-  - export PATH=${PATH}:/opt/mingw32/bin
+addons:
+  apt:
+    packages:
+    - gcc-mingw-w64
+    - wine
 
 script:
   - mkdir build && cd build

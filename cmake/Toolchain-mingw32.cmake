@@ -8,7 +8,7 @@ SET(CMAKE_RC_COMPILER i686-w64-mingw32-windres)
 SET(CMAKE_DLLTOOL i686-w64-mingw32-dlltool)
 
 # here is the target environment located
-SET(CMAKE_FIND_ROOT_PATH  /opt/mingw32)
+# SET(CMAKE_FIND_ROOT_PATH  /opt/mingw32)
 
 # adjust the default behaviour of the FIND_XXX() commands:
 # search headers and libraries in the target environment, search 
