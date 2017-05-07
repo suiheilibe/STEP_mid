@@ -38,7 +38,7 @@ endif()
 
 if(STEP_K)
   target_compile_definitions(${target} PRIVATE UNICODE=1 _UNICODE=1)
-  target_compile_definitions(${target_objs} PRIVATE UNICODE=1 _UNICODE=1)
+  target_compile_definitions(${target_objs} PRIVATE UNICODE=1 _UNICODE=1 STEP_K=1)
 endif()
 
 set_target_properties(${target} PROPERTIES PREFIX "" SUFFIX .ste)

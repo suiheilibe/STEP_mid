@@ -44,7 +44,10 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvRe
 void readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, MetaEvent *events, int type)
 {
     MetaEvent *p = &events[type];
-    TCHAR buf[META_BUFFER_SIZE];
+    char buf[META_BUFFER_SIZE];
+#ifdef STEP_K
+    WCHAR wbuf[META_BUFFER_SIZE];
+#endif
     if ( p->offset >= 0 )
     {
         int length = p->length;
@@ -54,7 +57,12 @@ void readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, MetaEvent *events, int type)
         fseek(fp, p->offset, SEEK_SET);
         fread(buf, length, 1, fp);
         buf[length] = '\0';
+#ifdef STEP_K
+        MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, length + 1, wbuf, META_BUFFER_SIZE);
+        (saSetFunc[type])(pFileMP3, wbuf);
+#else
         (saSetFunc[type])(pFileMP3, buf);
+#endif
     }
 }
 
