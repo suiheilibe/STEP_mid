@@ -15,34 +15,25 @@ configure_file(resource.rc.in ${rcfile})
 add_library(${target_objs} OBJECT
   ${rcfile}
   STEP_mid.cpp
-  SMFUtil.cpp)
+  SMFUtil.cpp
+  ${steplugin})
 
 if(MINGW)
-  add_library(${target_lib} STATIC $<TARGET_OBJECTS:${target_objs}>)
   set(expfile "${CMAKE_CURRENT_BINARY_DIR}/STEP_mid.exp.obj")
   if(STEP_K)
     add_custom_command(
       OUTPUT ${expfile}
       COMMAND ${CMAKE_DLLTOOL} -e ${expfile} -d "${CMAKE_CURRENT_SOURCE_DIR}/STEP_mid_k.def"
-      DEPENDS ${target_lib}
     )
   else()
     add_custom_command(
       OUTPUT ${expfile}
-      COMMAND ${CMAKE_DLLTOOL} -e ${expfile} --add-stdcall-underscore $<TARGET_FILE:${target_lib}>
-      DEPENDS ${target_lib}
+      COMMAND ${CMAKE_DLLTOOL} -e ${expfile} --add-stdcall-underscore -d "${CMAKE_CURRENT_SOURCE_DIR}/STEP_mid.def"
     )
   endif()
-  add_library(${target} MODULE
-    ${steplugin}
-    ${expfile}
-  )
-  target_link_libraries(${target} ${target_lib})
+  add_library(${target} MODULE ${expfile} $<TARGET_OBJECTS:${target_objs}>)
 else()
-  add_library(${target} MODULE
-    ${steplugin}
-    $<TARGET_OBJECTS:${target_objs}>
-  )
+  add_library(${target} MODULE $<TARGET_OBJECTS:${target_objs}>)
 endif()
 
 if(STEP_K)

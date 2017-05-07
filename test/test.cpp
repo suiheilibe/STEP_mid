@@ -9,13 +9,19 @@
 
 #include "SMFUtil.h"
 
+#ifdef UNICODE
+#ifdef _WIN32
+#define fopen _wfopen
+#endif
+#endif
+
 extern void readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, MetaEvent *events, int type);
 
 TEST_GROUP(SMFUtilTestGroup)
 {
     void setup()
     {
-        fp = fopen("test.mid", TEXT("rb"));
+        fp = fopen(TEXT("test.mid"), TEXT("rb"));
         events = (MetaEvent *)malloc(sizeof(MetaEvent) * META_MAX);
     }
     
@@ -80,35 +86,3 @@ BENCHMARK(STEP_mid, STEPLoad, 10, 100)
     STEPLoad(NULL, "");
 }
 */
-LPCTSTR GetValue(FILE_INFO* pInfo, FIELDTYPE nField)
-{
-    return "./test.mid";
-}
-
-void SetValue(FILE_INFO* pInfo, FIELDTYPE nField, LPCTSTR szValue)
-{
-}
-
-bool Initialize(void)
-{
-    return true;
-}
-
-void Finalize(void)
-{
-}
-
-UINT WINAPI _STEPRegisterExt(UINT, LPCTSTR, HBITMAP)
-{
-    return 0;
-}
-
-UINT (WINAPI *STEPRegisterExt)(UINT, LPCTSTR, HBITMAP) = _STEPRegisterExt;
-
-void SetFormat(FILE_INFO* pInfo, UINT nFormat)
-{
-}
-
-void* GetFileSpecificInfo(FILE_INFO* pInfo) {
-	return NULL;
-}

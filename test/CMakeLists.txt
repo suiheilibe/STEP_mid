@@ -10,9 +10,14 @@ set(test_lib_project_args "-DTESTS=OFF")
 set(test_target "${target}.test")
 set(test_name "STEP_mid")
 
+if(STEP_K)
+  include_directories(../src/STEP_K_SDK/STEP_SDK)
+else()
+  include_directories(../src/STEP_SDK)
+endif()
+
 include_directories(
-  "${CMAKE_CURRENT_SOURCE_DIR}/../src"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../src/STEP_SDK"
+  ../src
   "${CMAKE_CURRENT_BINARY_DIR}/include"
 )
 link_directories("${CMAKE_CURRENT_BINARY_DIR}/lib")
@@ -23,6 +28,10 @@ endif()
 
 add_executable(${test_target} test.cpp $<TARGET_OBJECTS:${target_objs}>)
 target_link_libraries(${test_target} ${test_lib})
+
+if(STEP_K)
+  target_compile_definitions(${test_target} PRIVATE UNICODE=1 _UNICODE=1)
+endif()
 
 file(COPY test.mid DESTINATION .)
 
