@@ -1,0 +1,32 @@
+LIBRARY "STEP_mid.ste"
+
+EXPORTS
+    STEPInit
+    STEPFinalize
+    STEPGetAPIVersion
+    STEPGetPluginName
+    STEPGetPluginInfo
+
+    STEPGetControlType
+    STEPGetColumnMax
+    STEPLoad
+    STEPSave
+
+;    STEPGetToolTipText
+;    STEPGetStatusMessage
+;    STEPOnUpdateCommand
+;    STEPOnCommand
+    STEPSupportSIF
+;    STEPSupportTrackNumberSIF
+;    STEPSupportGenreSIF
+    STEPShowOptionDialog
+;    STEPOnLoadMenu
+;    STEPOnLoadMainMenu
+;    STEPGetColumnName
+;    STEPHasSpecificColumnName
+    STEPInitFileSpecificInfo
+;    STEPOnConvSiFieldToId3tag
+;    STEPOnLoadStart
+;    STEPOnSaveStart
+;    STEPOnLoadEnd
+;    STEPOnSaveEnd
