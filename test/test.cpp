@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include <windows.h>
+#include <tchar.h>
 
 #include "CppUTest/CommandLineTestRunner.h"
 
@@ -9,19 +10,13 @@
 
 #include "SMFUtil.h"
 
-#ifdef UNICODE
-#ifdef _WIN32
-#define fopen _wfopen
-#endif
-#endif
-
 extern void readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, MetaEvent *events, int type);
 
 TEST_GROUP(SMFUtilTestGroup)
 {
     void setup()
     {
-        fp = fopen(TEXT("test.mid"), TEXT("rb"));
+        fp = _tfopen(TEXT("test.mid"), TEXT("rb"));
         events = (MetaEvent *)malloc(sizeof(MetaEvent) * META_MAX);
     }
     

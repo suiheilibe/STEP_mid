@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <tchar.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -8,12 +9,6 @@
 #include "SMFUtil.h"
 
 #include "resource.h"
-
-#ifdef UNICODE
-#ifdef _WIN32
-#define fopen _wfopen
-#endif
-#endif
 
 #define PLUGINNAME TEXT("STEP_mid")
 #define META_BUFFER_SIZE 1024
@@ -153,7 +148,7 @@ STEP_API UINT WINAPI STEPGetColumnMax(UINT nFormat, COLUMNTYPE nColumn, bool isE
 
 STEP_API UINT WINAPI STEPLoad(FILE_INFO *pFileMP3, LPCTSTR szExt)
 {
-    FILE *fp = fopen(GetFullPath(pFileMP3), TEXT("rb"));
+    FILE *fp = _tfopen(GetFullPath(pFileMP3), TEXT("rb"));
     if ( !fp )
     {
         return STEP_ERROR;
