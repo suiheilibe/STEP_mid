@@ -16,10 +16,10 @@ TEST_GROUP(SMFUtilTestGroup)
 {
     void setup()
     {
-        fp = _tfopen(TEXT("test.mid"), TEXT("rb"));
+        errno_t err = _tfopen_s(&fp, TEXT("test.mid"), TEXT("rb"));
         events = (MetaEvent *)malloc(sizeof(MetaEvent) * META_MAX);
     }
-    
+
     void teardown()
     {
         free(events);

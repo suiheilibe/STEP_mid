@@ -148,8 +148,9 @@ STEP_API UINT WINAPI STEPGetColumnMax(UINT nFormat, COLUMNTYPE nColumn, bool isE
 
 STEP_API UINT WINAPI STEPLoad(FILE_INFO *pFileMP3, LPCTSTR szExt)
 {
-    FILE *fp = _tfopen(GetFullPath(pFileMP3), TEXT("rb"));
-    if ( !fp )
+    FILE *fp;
+    errno_t err = _tfopen_s(&fp, GetFullPath(pFileMP3), TEXT("rb"));
+    if ( err )
     {
         return STEP_ERROR;
     }
