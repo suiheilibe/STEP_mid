@@ -28,7 +28,7 @@ if(MINGW)
   else()
     add_custom_command(
       OUTPUT ${expfile}
-      COMMAND ${CMAKE_DLLTOOL} -e ${expfile} --add-stdcall-underscore -d "${CMAKE_CURRENT_SOURCE_DIR}/STEP_mid.def"
+      COMMAND ${CMAKE_DLLTOOL} -e ${expfile} --add-stdcall-underscore -d "${CMAKE_CURRENT_SOURCE_DIR}/STEP_mid_m.def"
     )
   endif()
   add_library(${target} MODULE ${expfile} $<TARGET_OBJECTS:${target_objs}>)
