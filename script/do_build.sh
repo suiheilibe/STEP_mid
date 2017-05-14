@@ -5,8 +5,7 @@ set -e
 rootdir="$1"
 generator="$2"
 target="$3"
-jobs="$4"
-cmakeopts="$5"
+cmakeopts="$4"
 
 builddir="${rootdir}/build/${target}"
 distdir="${rootdir}/dist/${target}"
@@ -20,7 +19,7 @@ mkdir -p "${builddir}"
 cd "${builddir}"
 rm -rf *
 cmake ../.. -G "${generator}" ${cmakeopts}
-make -j${jobs}
+cmake --build .
 mkdir -p "${distdir}"
 cp src/STEP_mid.ste "${distdir}"
 cd "${distdir}"
