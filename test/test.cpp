@@ -10,14 +10,14 @@
 
 #include "SMFUtil.h"
 
-extern void readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, MetaEvent *events, int type);
+extern void readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent *events, int type);
 
 TEST_GROUP(SMFUtilTestGroup)
 {
     void setup()
     {
         errno_t err = _tfopen_s(&fp, TEXT("test.mid"), TEXT("rb"));
-        events = (MetaEvent *)malloc(sizeof(MetaEvent) * META_MAX);
+        events = (SMFUtil::MetaEvent *)malloc(sizeof(SMFUtil::MetaEvent) * SMFUtil::META_MAX);
     }
 
     void teardown()
@@ -27,7 +27,7 @@ TEST_GROUP(SMFUtilTestGroup)
     }
     
     FILE *fp;
-    MetaEvent *events;
+    SMFUtil::MetaEvent *events;
 };
 
 TEST(SMFUtilTestGroup, findMetaEvents)

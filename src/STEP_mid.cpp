@@ -36,9 +36,9 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvRe
     return TRUE;
 }
 
-void readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, MetaEvent *events, int type)
+void readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent *events, int type)
 {
-    MetaEvent *p = &events[type];
+    SMFUtil::MetaEvent *p = &events[type];
     char buf[META_BUFFER_SIZE];
 #ifdef STEP_K
     WCHAR wbuf[META_BUFFER_SIZE];
@@ -154,7 +154,7 @@ STEP_API UINT WINAPI STEPLoad(FILE_INFO *pFileMP3, LPCTSTR szExt)
     {
         return STEP_ERROR;
     }
-    MetaEvent events[sizeof(MetaEvent) * META_MAX];
+    SMFUtil::MetaEvent events[sizeof(SMFUtil::MetaEvent) * SMFUtil::META_MAX];
     memset(events, 0, sizeof(events));
     if ( !events )
     {
@@ -165,7 +165,7 @@ STEP_API UINT WINAPI STEPLoad(FILE_INFO *pFileMP3, LPCTSTR szExt)
     if ( SMFUtil::findMetaEvents(fp, events) )
     {
         int i;
-        for (i = 0; i < META_MAX; i++)
+        for (i = 0; i < SMFUtil::META_MAX; i++)
         {
             readMetaEvent(pFileMP3, fp, events, i);
         }
