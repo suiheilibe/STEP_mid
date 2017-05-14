@@ -1,8 +1,6 @@
 #ifndef _SMFUTIL_H
 #define _SMFUTIL_H
 
-#define SIG_SIZE 4
-
 enum MetaEventType
 {
     META_COMMENT = 0,
@@ -24,6 +22,7 @@ typedef struct _MetaEvent
 class SMFUtil
 {
 public:
+    static const int SIG_SIZE = 4;
     static bool findMetaEvents(FILE *fp, MetaEvent *events);
 };
 
