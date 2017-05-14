@@ -110,7 +110,8 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
         }
         if ( strncmp((const char *)buf, "MTrk", SIG_SIZE) )
         {
-            return false;
+            // Allow junk data which follows an end of track
+            break;
         }
         trkLenOffset = ftell(fp);// トラックのサイズを書く場所
         fseek(fp, 4, SEEK_CUR);// サイズは無視
