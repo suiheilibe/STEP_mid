@@ -2,6 +2,7 @@
 #include <tchar.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "STEPlugin.h"
@@ -10,8 +11,8 @@
 
 #include "resource.h"
 
-#define PLUGINNAME _T("STEP_mid")
-#define META_BUFFER_SIZE 1024
+LPCTSTR PLUGINNAME = _T("STEP_mid");
+static const int STATIC_META_BUFFER_SIZE = 1024;
 
 static UINT nPluginID;
 static UINT nFileTypeMID;
@@ -21,6 +22,11 @@ static LPCTSTR (*saGetFunc[])(FILE_INFO*) = {GetComment, GetArtistName, GetTrack
 
 static HINSTANCE hDLL;
 static TCHAR plugininfo[256];
+
+static char staticBuf[STATIC_META_BUFFER_SIZE];
+#ifdef STEP_K
+static WCHAR staticWbuf[STATIC_META_BUFFER_SIZE];
+#endif
 
 extern "C" BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
@@ -36,32 +42,69 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvRe
     return TRUE;
 }
 
+static long getMetaEventMaxLength(SMFUtil::MetaEvent *events)
+{
+    long maxLength = 0;
+    long length;
+    for (int i = 0; i < SMFUtil::META_MAX; i++)
+    {
+        length = events[i].length;
+        if (maxLength < length) {
+            maxLength = length;
+        }
+    }
+
+    return maxLength;
+}
+
 static void readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent *events)
 {
-    char buf[META_BUFFER_SIZE];
+    long maxLength = getMetaEventMaxLength(events);
+    long minBufSize = maxLength + 1;
+    char *buf, *heapBuf = nullptr;
 #ifdef STEP_K
-    WCHAR wbuf[META_BUFFER_SIZE];
+    WCHAR *wbuf, *heapWbuf = nullptr;
 #endif
+    if (minBufSize > STATIC_META_BUFFER_SIZE) {
+        heapBuf = (char *)malloc(minBufSize);
+        if (heapBuf == nullptr) {
+            exit(EXIT_FAILURE);
+        }
+#ifdef STEP_K
+        heapWbuf = (WCHAR *)malloc(minBufSize * sizeof(WCHAR));
+        if (heapWbuf == nullptr) {
+            exit(EXIT_FAILURE);
+        }
+#endif
+    } else {
+        buf = staticBuf;
+#ifdef STEP_K
+        wbuf = staticWbuf;
+#endif
+    }
+
     for (int i = 0; i < SMFUtil::META_MAX; i++)
     {
         SMFUtil::MetaEvent *p = &events[i];
         if ( p->offset >= 0 )
         {
             long length = p->length;
-            if (length >= META_BUFFER_SIZE) {
-                length = META_BUFFER_SIZE - 1;
-            }
             fseek(fp, p->offset, SEEK_SET);
             fread(buf, length, 1, fp);
             buf[length] = '\0';
 #ifdef STEP_K
-            MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, length + 1, wbuf, META_BUFFER_SIZE);
+            MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, length + 1, wbuf, STATIC_META_BUFFER_SIZE);
             (saSetFunc[i])(pFileMP3, wbuf);
 #else
             (saSetFunc[i])(pFileMP3, buf);
 #endif
         }
     }
+
+    if (heapBuf != nullptr) free(heapBuf);
+#ifdef STEP_K
+    if (heapWbuf != nullptr) free(heapWbuf);
+#endif
 }
 
 STEP_API LPCTSTR WINAPI STEPGetPluginInfo(void)
@@ -138,11 +181,11 @@ STEP_API UINT WINAPI STEPGetColumnMax(UINT nFormat, COLUMNTYPE nColumn, bool isE
     switch (nColumn)
     {
     case COLUMN_TRACK_NAME:
-        return META_BUFFER_SIZE - 1;
+        return STATIC_META_BUFFER_SIZE - 1;
     case COLUMN_ARTIST_NAME:
-        return META_BUFFER_SIZE - 1;
+        return STATIC_META_BUFFER_SIZE - 1;
     case COLUMN_COMMENT:
-        return META_BUFFER_SIZE - 1;
+        return STATIC_META_BUFFER_SIZE - 1;
     default:
         break;
     }
