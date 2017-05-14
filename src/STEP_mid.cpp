@@ -194,20 +194,18 @@ STEP_API UINT WINAPI STEPGetColumnMax(UINT nFormat, COLUMNTYPE nColumn, bool isE
 
 STEP_API UINT WINAPI STEPLoad(FILE_INFO *pFileMP3, LPCTSTR szExt)
 {
+    UINT ret;
     FILE *fp;
+
     errno_t err = _tfopen_s(&fp, GetFullPath(pFileMP3), _T("rb"));
     if ( err )
     {
         return STEP_ERROR;
     }
+
     SMFUtil::MetaEvent events[sizeof(SMFUtil::MetaEvent) * SMFUtil::META_MAX];
     memset(events, 0, sizeof(events));
-    if ( !events )
-    {
-        fclose(fp);
-        return STEP_ERROR;
-    }
-    UINT ret;
+
     if ( SMFUtil::findMetaEvents(fp, events) )
     {
         readMetaEvent(pFileMP3, fp, events);
