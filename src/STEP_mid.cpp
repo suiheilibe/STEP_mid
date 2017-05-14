@@ -36,28 +36,31 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvRe
     return TRUE;
 }
 
-void readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent *events, int type)
+static void readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent *events)
 {
-    SMFUtil::MetaEvent *p = &events[type];
     char buf[META_BUFFER_SIZE];
 #ifdef STEP_K
     WCHAR wbuf[META_BUFFER_SIZE];
 #endif
-    if ( p->offset >= 0 )
+    for (int i = 0; i < SMFUtil::META_MAX; i++)
     {
-        int length = p->length;
-        if (length >= META_BUFFER_SIZE) {
-            length = META_BUFFER_SIZE - 1;
-        }
-        fseek(fp, p->offset, SEEK_SET);
-        fread(buf, length, 1, fp);
-        buf[length] = '\0';
+        SMFUtil::MetaEvent *p = &events[i];
+        if ( p->offset >= 0 )
+        {
+            long length = p->length;
+            if (length >= META_BUFFER_SIZE) {
+                length = META_BUFFER_SIZE - 1;
+            }
+            fseek(fp, p->offset, SEEK_SET);
+            fread(buf, length, 1, fp);
+            buf[length] = '\0';
 #ifdef STEP_K
-        MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, length + 1, wbuf, META_BUFFER_SIZE);
-        (saSetFunc[type])(pFileMP3, wbuf);
+            MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, length + 1, wbuf, META_BUFFER_SIZE);
+            (saSetFunc[i])(pFileMP3, wbuf);
 #else
-        (saSetFunc[type])(pFileMP3, buf);
+            (saSetFunc[i])(pFileMP3, buf);
 #endif
+        }
     }
 }
 
@@ -164,11 +167,7 @@ STEP_API UINT WINAPI STEPLoad(FILE_INFO *pFileMP3, LPCTSTR szExt)
     UINT ret;
     if ( SMFUtil::findMetaEvents(fp, events) )
     {
-        int i;
-        for (i = 0; i < SMFUtil::META_MAX; i++)
-        {
-            readMetaEvent(pFileMP3, fp, events, i);
-        }
+        readMetaEvent(pFileMP3, fp, events);
         SetFormat(pFileMP3, nFileTypeMID);
         SetFileTypeName(pFileMP3, _T("MIDI"));
         ret = STEP_SUCCESS;

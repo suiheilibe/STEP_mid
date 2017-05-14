@@ -3,9 +3,9 @@
 
 #include "SMFUtil.h"
 
-static int readDelta(FILE *fp)
+static long readDelta(FILE *fp)
 {
-    int val = 0;
+    long val = 0;
     int c;
     int f;
     int i;
@@ -29,7 +29,7 @@ static int readDelta(FILE *fp)
     return val;
 }
 
-static void writeDelta(FILE *fp, int val)
+static void writeDelta(FILE *fp, long val)
 {
     // 0以下は0扱い
     if ( val <= 0 )
@@ -68,8 +68,8 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
 {
     int i;
     char buf[SIG_SIZE];
-    int curTrack = 0;
-    int trkLenOffset = 0;
+    long curTrack = 0;
+    long trkLenOffset = 0;
     bool baFound[META_MAX];// メタイベントが見つかったかどうか
     // ヘッダ
     fread(buf, 1, SIG_SIZE, fp);
@@ -117,7 +117,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                     {
                         // メタイベント
                         int type = fgetc(fp);
-                        int length = readDelta(fp);
+                        long length = readDelta(fp);
                         if ( length < 0 )
                         {
                             return false;
@@ -152,7 +152,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                     else
                     {
                         // SysExは読み飛ばす
-                        int length = readDelta(fp);
+                        long length = readDelta(fp);
                         if ( length < 0 )
                         {
                             return false;

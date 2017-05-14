@@ -14,10 +14,10 @@ public:
     struct MetaEvent
     {
         // トラックの長さのアドレス
-        int trkLenOffset;
+        long trkLenOffset;
         // 先頭からのアドレス
-        int offset;
-        int length;
+        long offset;
+        long length;
     };
     static const int SIG_SIZE = 4;
     static bool findMetaEvents(FILE *fp, MetaEvent *events);
