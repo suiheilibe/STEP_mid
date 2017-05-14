@@ -107,8 +107,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
             // デルタタイムは読み飛ばす
             if ( readDelta(fp) < 0 )
             {
-                //return false;
-                return true;
+                return false;
             }
             int c = fgetc(fp);
             if ( c == EOF )
@@ -117,13 +116,13 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
             }
             if (c & 0x80)
             {
-                if ( c & 0xf0 )
+                if ( c & 0xf0 == 0xf0 )
                 {
                     if ( c == 0xff )
                     {
                         // メタイベント
                         int type = fgetc(fp);
-                        debugOut(_T("%s: Meta event starts: offset = %x, type = %x\n"),  __func__, ftell(fp) - 2, type);
+                        debugOut(_T("%s: Meta event starts: offset = %x, type = %d, status = %02x\n"),  __func__, ftell(fp) - 2, type, c);
                         long length = readDelta(fp);
                         debugOut(_T("%s: Meta event length: %d\n"),  __func__, length);
                         if ( length < 0 )
@@ -160,7 +159,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                     }
                     else
                     {
-                        debugOut(_T("%s: SysEx starts: offset = %x\n"),  __func__, ftell(fp) - 1);
+                        debugOut(_T("%s: SysEx starts: offset = %x, status = %02x\n"),  __func__, ftell(fp) - 1, c);
                         // SysExは読み飛ばす
                         long length = readDelta(fp);
                         debugOut(_T("%s: SysEx length: %d\n"),  __func__, length);
@@ -168,18 +167,19 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                         {
                             return false;
                         }
+                        //if (c == 0xf7) 
                         fseek(fp, length, SEEK_CUR);
                     }
                 }
                 else
                 {
-                    debugOut(_T("%s: Channel message: offset = %x\n"),  __func__, ftell(fp) - 1);
+                    debugOut(_T("%s: Channel message: offset = %x, status = %02x\n"),  __func__, ftell(fp) - 1, c);
                     fseek(fp, 2, SEEK_CUR);// 3バイトのチャンネルメッセージ
                 }
             }
             else
             {
-                debugOut(_T("%s: Channel message (RS): offset = %x\n"),  __func__, ftell(fp) - 1);
+                debugOut(_T("%s: Channel message (RS): offset = %x, status = %02x\n"),  __func__, ftell(fp) - 1, c);
                 fseek(fp, 1, SEEK_CUR);// ランニングステータスルール適用チャンネルメッセージ
             }
         }
