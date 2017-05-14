@@ -10,7 +10,7 @@
 
 #include "resource.h"
 
-#define PLUGINNAME TEXT("STEP_mid")
+#define PLUGINNAME _T("STEP_mid")
 #define META_BUFFER_SIZE 1024
 
 static UINT nPluginID;
@@ -82,7 +82,7 @@ STEP_API bool WINAPI STEPInit(UINT pID, LPCTSTR szPluginFolder)
     nFileTypeOGG = STEPRegisterExt(nPluginID, "ogg", hOGGBitmap);
     DeleteObject(hOGGBitmap);*/
 
-    nFileTypeMID = STEPRegisterExt(nPluginID, TEXT("mid"), NULL);
+    nFileTypeMID = STEPRegisterExt(nPluginID, _T("mid"), NULL);
     return true;
 }
 
@@ -149,7 +149,7 @@ STEP_API UINT WINAPI STEPGetColumnMax(UINT nFormat, COLUMNTYPE nColumn, bool isE
 STEP_API UINT WINAPI STEPLoad(FILE_INFO *pFileMP3, LPCTSTR szExt)
 {
     FILE *fp;
-    errno_t err = _tfopen_s(&fp, GetFullPath(pFileMP3), TEXT("rb"));
+    errno_t err = _tfopen_s(&fp, GetFullPath(pFileMP3), _T("rb"));
     if ( err )
     {
         return STEP_ERROR;
@@ -170,7 +170,7 @@ STEP_API UINT WINAPI STEPLoad(FILE_INFO *pFileMP3, LPCTSTR szExt)
             readMetaEvent(pFileMP3, fp, events, i);
         }
         SetFormat(pFileMP3, nFileTypeMID);
-        SetFileTypeName(pFileMP3, TEXT("MIDI"));
+        SetFileTypeName(pFileMP3, _T("MIDI"));
         ret = STEP_SUCCESS;
     }
     else
@@ -242,7 +242,7 @@ STEP_API void WINAPI STEPShowOptionDialog(HWND hWnd)
 
 
 /*
-STEP_API LPCTSTR WINAPI STEPGetToolTipText(UINT nID)
+STEP_API LPCTSTR WINAPI STEPGetToolTip_T(UINT nID)
 {
 	return NULL;
 }
