@@ -57,8 +57,9 @@ static long getMetaEventMaxLength(SMFUtil::MetaEvent *events)
     return maxLength;
 }
 
-static void readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent *events)
+static bool readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent *events)
 {
+    bool ret = true;
     long maxLength = getMetaEventMaxLength(events);
     long minBufSize = maxLength + 1;
     char *buf, *heapBuf = nullptr;
@@ -68,12 +69,14 @@ static void readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent *eve
     if (minBufSize > STATIC_META_BUFFER_SIZE) {
         heapBuf = (char *)malloc(minBufSize);
         if (heapBuf == nullptr) {
-            exit(EXIT_FAILURE);
+            ret = false;
+            goto finish;
         }
 #ifdef STEP_K
         heapWbuf = (WCHAR *)malloc(minBufSize * sizeof(WCHAR));
         if (heapWbuf == nullptr) {
-            exit(EXIT_FAILURE);
+            ret = false;
+            goto finish;
         }
 #endif
     } else {
@@ -101,10 +104,13 @@ static void readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent *eve
         }
     }
 
+finish:
     if (heapBuf != nullptr) free(heapBuf);
 #ifdef STEP_K
     if (heapWbuf != nullptr) free(heapWbuf);
 #endif
+
+    return ret;
 }
 
 STEP_API LPCTSTR WINAPI STEPGetPluginInfo(void)
@@ -208,10 +214,13 @@ STEP_API UINT WINAPI STEPLoad(FILE_INFO *pFileMP3, LPCTSTR szExt)
 
     if ( SMFUtil::findMetaEvents(fp, events) )
     {
-        readMetaEvent(pFileMP3, fp, events);
-        SetFormat(pFileMP3, nFileTypeMID);
-        SetFileTypeName(pFileMP3, _T("MIDI"));
-        ret = STEP_SUCCESS;
+        if (readMetaEvent(pFileMP3, fp, events)) {
+            SetFormat(pFileMP3, nFileTypeMID);
+            SetFileTypeName(pFileMP3, _T("MIDI"));
+            ret = STEP_SUCCESS;
+        } else {
+            ret = STEP_ERROR;
+        }
     }
     else
     {
