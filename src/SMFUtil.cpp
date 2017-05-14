@@ -71,7 +71,7 @@ static void writeDelta(FILE *fp, long val)
 static int getNumMessageBytes(int status)
 {
     int index = ((status & 0xf0) >> 4) - 8;
-    if (0 <= index && index <= 6) {
+    if (index < 0 || 6 < index) {
         debugOut(_T("%s: Invalid status: status = %02x\n"),  __func__, status);
         return -1;
     }
