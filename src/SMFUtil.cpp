@@ -68,6 +68,17 @@ static void writeDelta(FILE *fp, long val)
     }
 }
 
+static int getNumMessageBytes(int status)
+{
+    int index = ((status & 0xf0) >> 4) - 8;
+    if (0 <= index && index <= 6) {
+        debugOut(_T("%s: Invalid status: status = %02x\n"),  __func__, status);
+        return -1;
+    }
+    // 8n, 9n, an, bn, cn, dn, en
+    return (const int[]){ 2, 2, 2, 2, 1, 1, 2 }[index];
+}
+
 bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
 {
     int i;
@@ -75,6 +86,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
     long curTrack = 0;
     long trkLenOffset = 0;
     bool baFound[META_MAX];// メタイベントが見つかったかどうか
+    int status; // For dealing with running status rule
     // ヘッダ
     fread(buf, 1, SIG_SIZE, fp);
     if ( strncmp((const char *)buf, "MThd", 4) )
@@ -116,7 +128,8 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
             }
             if (c & 0x80)
             {
-                if ( c & 0xf0 == 0xf0 )
+                status = c;
+                if ( (c & 0xf0) == 0xf0 )
                 {
                     if ( c == 0xff )
                     {
@@ -173,14 +186,20 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                 }
                 else
                 {
-                    debugOut(_T("%s: Channel message: offset = %x, status = %02x\n"),  __func__, ftell(fp) - 1, c);
-                    fseek(fp, 2, SEEK_CUR);// 3バイトのチャンネルメッセージ
+                    int n = getNumMessageBytes(status);
+                    debugOut(_T("%s: Channel message: offset = %x, status = %02x, size = %d\n"),  __func__, ftell(fp) - 1, c, n + 1);
+                    fseek(fp, n, SEEK_CUR);// 3バイトのチャンネルメッセージ
                 }
             }
             else
             {
-                debugOut(_T("%s: Channel message (RS): offset = %x, status = %02x\n"),  __func__, ftell(fp) - 1, c);
-                fseek(fp, 1, SEEK_CUR);// ランニングステータスルール適用チャンネルメッセージ
+                int n = getNumMessageBytes(status);
+                if (n < 0) {
+                    // Invalid status which violates the running status rule
+                    return false;
+                }
+                debugOut(_T("%s: Channel message (RS): offset = %x, status = %02x, size = %d\n"),  __func__, ftell(fp) - 1, c, n);
+                fseek(fp, n - 1, SEEK_CUR);// ランニングステータスルール適用チャンネルメッセージ
             }
         }
         // 最初のトラックでシーケンス名以外全て見つかった
