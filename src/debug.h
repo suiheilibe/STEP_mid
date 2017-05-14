@@ -5,14 +5,21 @@
 #include <tchar.h>
 #include <stdio.h>
 
-inline void debugOut(LPCTSTR pszFormat, ...)
+#if defined(DEBUG) || defined(_DEBUG)
+#define DEBUGOUT(fmt, ...) _debugOut(fmt, __VA_ARGS__)
+#else
+#define DEBUGOUT(fmt, ...)
+#endif
+
+inline void _debugOut(LPCTSTR fmt, ...)
 {
+    static const int BUF_SIZE = 256;
     va_list	argp;
-    TCHAR pszBuf[256];
-    va_start(argp, pszFormat);
-    _vstprintf_s(pszBuf, 255, pszFormat, argp);
+    TCHAR buf[BUF_SIZE];
+    va_start(argp, fmt);
+    _vstprintf_s(buf, BUF_SIZE - 1, fmt, argp);
     va_end(argp);
-    OutputDebugString(pszBuf);
+    OutputDebugString(buf);
 }
 
 #endif
