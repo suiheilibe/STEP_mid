@@ -8,6 +8,7 @@
 
 #include "SMFUtil.h"
 #include "STEPMidUtil.h"
+#include "debug.h"
 
 #include "resource.h"
 
@@ -123,6 +124,7 @@ STEP_API UINT WINAPI STEPLoad(FILE_INFO *pFileMP3, LPCTSTR szExt)
     UINT ret;
     FILE *fp;
 
+    DEBUGOUT(_T("%s: Loading \"%s\""), __func__, GetFullPath(pFileMP3));
     errno_t err = _tfopen_s(&fp, GetFullPath(pFileMP3), _T("rb"));
     if ( err )
     {
