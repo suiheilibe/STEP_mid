@@ -1,5 +1,5 @@
-#ifndef _DEBUG_H_
-#define _DEBUG_H_
+#ifndef _STEP_MID_DEBUG_H_
+#define _STEP_MID_DEBUG_H_
 
 #include <windows.h>
 #include <tchar.h>

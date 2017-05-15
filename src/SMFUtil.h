@@ -1,5 +1,5 @@
-#ifndef _SMFUTIL_H
-#define _SMFUTIL_H
+#ifndef _STEP_MID_SMFUTIL_H_
+#define _STEP_MID_SMFUTIL_H_
 
 class SMFUtil
 {
