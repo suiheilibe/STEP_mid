@@ -11,11 +11,6 @@ cmakebuildopts="$5"
 builddir="${rootdir}/build/${target}"
 distdir="${rootdir}/dist/${target}"
 
-if echo "${target}" | grep "^STEP_K" >/dev/null
-then
-    cmakeopts="${cmakeopts} -DSTEP_K=1"
-fi
-
 mkdir -p "${builddir}"
 cd "${builddir}"
 rm -rf *
