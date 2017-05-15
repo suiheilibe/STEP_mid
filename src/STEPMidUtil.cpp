@@ -8,6 +8,7 @@
 
 #include "SMFUtil.h"
 #include "STEPMidUtil.h"
+#include "debug.h"
 
 static void (*saSetFunc[])(FILE_INFO*,LPCTSTR) = {SetComment, SetArtistName, SetTrackName};
 static LPCTSTR (*saGetFunc[])(FILE_INFO*) = {GetComment, GetArtistName, GetTrackName};
@@ -17,7 +18,7 @@ static char staticBuf[STEPMidUtil::STATIC_META_BUFFER_SIZE];
 static WCHAR staticWbuf[STEPMidUtil::STATIC_META_BUFFER_SIZE];
 #endif
 
-static long getMetaEventMaxLength(SMFUtil::MetaEvent *events)
+static long getMaxMetaEventLength(SMFUtil::MetaEvent *events)
 {
     long maxLength = 0;
     long length;
@@ -35,29 +36,28 @@ static long getMetaEventMaxLength(SMFUtil::MetaEvent *events)
 bool STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent *events)
 {
     bool ret = true;
-    long maxLength = getMetaEventMaxLength(events);
-    long minBufSize = maxLength + 1;
-    char *buf, *heapBuf = nullptr;
+    long maxLength = getMaxMetaEventLength(events);
+    long maxLengthWithNull = maxLength + 1;
+    char *buf = staticBuf, *heapBuf = nullptr;
 #ifdef STEP_K
-    WCHAR *wbuf, *heapWbuf = nullptr;
+    WCHAR *wbuf = staticWbuf, *heapWbuf = nullptr;
+    long maxWcharLengthWithNull = maxLengthWithNull;
 #endif
-    if (minBufSize > STATIC_META_BUFFER_SIZE) {
-        heapBuf = (char *)malloc(minBufSize);
+    DEBUGOUT(_T("%s: maxLengthWithNull = %d\n"), __func__, maxLengthWithNull);
+    if (maxLengthWithNull > STATIC_META_BUFFER_SIZE) {
+        heapBuf = (char *)malloc(maxLengthWithNull * sizeof(char));
         if (heapBuf == nullptr) {
             ret = false;
             goto finish;
         }
+        buf = heapBuf;
 #ifdef STEP_K
-        heapWbuf = (WCHAR *)malloc(minBufSize * sizeof(WCHAR));
+        heapWbuf = (WCHAR *)malloc(maxLengthWithNull * sizeof(WCHAR));
         if (heapWbuf == nullptr) {
             ret = false;
             goto finish;
         }
-#endif
-    } else {
-        buf = staticBuf;
-#ifdef STEP_K
-        wbuf = staticWbuf;
+        wbuf = heapWbuf;
 #endif
     }
 
@@ -68,10 +68,29 @@ bool STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEven
         {
             long length = p->length;
             fseek(fp, p->offset, SEEK_SET);
-            fread(buf, length, 1, fp);
+            if (fread(buf, sizeof(char), length, fp) < length) {
+                ret = false;
+                goto finish;
+            }
             buf[length] = '\0';
 #ifdef STEP_K
-            MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, length + 1, wbuf, STATIC_META_BUFFER_SIZE);
+            long wcharLengthWithNull = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, -1, nullptr, 0);
+            DEBUGOUT(_T("%s: wcharLengthWithNull = %d, maxWcharLengthWithNull = %d\n"), __func__, wcharLengthWithNull, maxWcharLengthWithNull);
+            if (wcharLengthWithNull > maxWcharLengthWithNull) {
+                long newSize = wcharLengthWithNull * sizeof(WCHAR);
+                if (heapWbuf == nullptr) {
+                    heapWbuf = (WCHAR *)malloc(newSize);
+                } else {
+                    heapWbuf = (WCHAR *)realloc(heapWbuf, newSize);
+                }
+                if (heapWbuf == nullptr) {
+                    ret = false;
+                    goto finish;
+                }
+                wbuf = heapWbuf;
+                maxWcharLengthWithNull = wcharLengthWithNull;
+            }
+            MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, -1, wbuf, wcharLengthWithNull);
             (saSetFunc[i])(pFileMP3, wbuf);
 #else
             (saSetFunc[i])(pFileMP3, buf);
