@@ -16,6 +16,7 @@ endif()
 # TODO: Separate this block to an individual file
 if(MINGW)
   set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -static")
+  set(CMAKE_CXX_FLAGS  "-Wall")
   set(CMAKE_CXX_FLAGS_DEBUG  "-g -DDEBUG -D_DEBUG")
 elseif(MSVC)
   foreach(flag_var
