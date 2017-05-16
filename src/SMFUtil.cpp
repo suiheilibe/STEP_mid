@@ -97,7 +97,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
     bool baFound[META_MAX];// メタイベントが見つかったかどうか
     int runningStatus; // For dealing with running status rule
     // ヘッダ
-    fread(buf, 1, SIG_SIZE, fp);
+    fread(buf, sizeof(char), SIG_SIZE, fp);
     if ( strncmp((const char *)buf, "MThd", 4) )
     {
         return false;
@@ -113,7 +113,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
     {
         runningStatus = -1;
         DEBUGOUT(_T("%s: Reading MTrk: offset = %x\n"),  __func__, ftell(fp));
-        if ( fread(buf, 1, SIG_SIZE, fp) < SIG_SIZE || feof(fp) )
+        if ( fread(buf, sizeof(char), SIG_SIZE, fp) < SIG_SIZE || feof(fp) )
         {
             // ここで終了することがない？
             break;
