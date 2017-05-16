@@ -95,7 +95,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
     long curTrack = 0;
     long trkLenOffset = 0;
     bool baFound[META_MAX];// メタイベントが見つかったかどうか
-    int runningStatus = -1; // For dealing with running status rule
+    int runningStatus; // For dealing with running status rule
     // ヘッダ
     fread(buf, 1, SIG_SIZE, fp);
     if ( strncmp((const char *)buf, "MThd", 4) )
@@ -111,6 +111,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
     }
     for (;;)
     {
+        runningStatus = -1;
         DEBUGOUT(_T("%s: Reading MTrk: offset = %x\n"),  __func__, ftell(fp));
         if ( fread(buf, 1, SIG_SIZE, fp) < SIG_SIZE || feof(fp) )
         {
