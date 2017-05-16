@@ -68,11 +68,15 @@ static void writeDelta(FILE *fp, long val)
     }
 }
 
-static int getNumMessageBytes(int status)
+static int getNumMessageBytes(int runningStatus)
 {
-    int index = ((status & 0xf0) >> 4) - 8;
+    if (runningStatus < 0) {
+        DEBUGOUT(_T("%s: Invalid runningStatus: runningStatus = %02x\n"),  __func__, runningStatus);
+        return -1;
+    }
+    int index = ((runningStatus & 0xf0) >> 4) - 8;
     if (index < 0 || 6 < index) {
-        DEBUGOUT(_T("%s: Invalid status: status = %02x\n"),  __func__, status);
+        DEBUGOUT(_T("%s: Invalid runningStatus: runningStatus = %02x\n"),  __func__, runningStatus);
         return -1;
     }
     // 8n, 9n, an, bn, cn, dn, en
@@ -86,7 +90,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
     long curTrack = 0;
     long trkLenOffset = 0;
     bool baFound[META_MAX];// メタイベントが見つかったかどうか
-    int status; // For dealing with running status rule
+    int runningStatus = -1; // For dealing with running runningStatus rule
     // ヘッダ
     fread(buf, 1, SIG_SIZE, fp);
     if ( strncmp((const char *)buf, "MThd", 4) )
@@ -129,14 +133,13 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
             }
             if (c & 0x80)
             {
-                status = c;
                 if ( (c & 0xf0) == 0xf0 )
                 {
                     if ( c == 0xff )
                     {
                         // メタイベント
                         int type = fgetc(fp);
-                        DEBUGOUT(_T("%s: Meta event starts: offset = %x, type = %d, status = %02x\n"),  __func__, ftell(fp) - 2, type, c);
+                        DEBUGOUT(_T("%s: Meta event starts: offset = %x, type = %d, runningStatus = %02x\n"),  __func__, ftell(fp) - 2, type, c);
                         long length = readDelta(fp);
                         DEBUGOUT(_T("%s: Meta event length: %d\n"),  __func__, length);
                         if ( length < 0 )
@@ -173,7 +176,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                     }
                     else
                     {
-                        DEBUGOUT(_T("%s: SysEx starts: offset = %x, status = %02x\n"),  __func__, ftell(fp) - 1, c);
+                        DEBUGOUT(_T("%s: SysEx starts: offset = %x, runningStatus = %02x\n"),  __func__, ftell(fp) - 1, runningStatus);
                         // SysExは読み飛ばす
                         long length = readDelta(fp);
                         DEBUGOUT(_T("%s: SysEx length: %d\n"),  __func__, length);
@@ -187,19 +190,20 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                 }
                 else
                 {
-                    int n = getNumMessageBytes(status);
-                    DEBUGOUT(_T("%s: Channel message: offset = %x, status = %02x, size = %d\n"),  __func__, ftell(fp) - 1, c, n + 1);
+                    runningStatus = c;
+                    int n = getNumMessageBytes(runningStatus);
+                    DEBUGOUT(_T("%s: Channel message: offset = %x, runningStatus = %02x, size = %d\n"),  __func__, ftell(fp) - 1, runningStatus, n + 1);
                     fseek(fp, n, SEEK_CUR);// 3バイトのチャンネルメッセージ
                 }
             }
             else
             {
-                int n = getNumMessageBytes(status);
+                int n = getNumMessageBytes(runningStatus);
                 if (n < 0) {
-                    // Invalid status which violates the running status rule
+                    // Invalid runningStatus which violates the running runningStatus rule
                     return false;
                 }
-                DEBUGOUT(_T("%s: Channel message (RS): offset = %x, status = %02x, size = %d\n"),  __func__, ftell(fp) - 1, c, n);
+                DEBUGOUT(_T("%s: Channel message (RS): offset = %x, runningStatus = %02x, size = %d\n"),  __func__, ftell(fp) - 1, runningStatus, n);
                 fseek(fp, n - 1, SEEK_CUR);// ランニングステータスルール適用チャンネルメッセージ
             }
         }
