@@ -5,9 +5,9 @@
 
 #include "debug.h"
 
-static long readDelta(FILE *fp)
+static int readVLV(FILE *fp, unsigned long *ret)
 {
-    long val = 0;
+    unsigned long val = 0;
     int c;
     int f;
     int i;
@@ -30,7 +30,12 @@ static long readDelta(FILE *fp)
         DEBUGOUT(_T("%s: Error\n"),  __func__);
         return -1;
     }
-    return val;
+
+    if (ret != nullptr) {
+        *ret = val;
+    }
+
+    return 0;
 }
 
 static void writeDelta(FILE *fp, long val)
@@ -123,7 +128,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
         {
             unsigned long seekOffset = 0;
             // デルタタイムは読み飛ばす
-            if ( readDelta(fp) < 0 )
+            if ( readVLV(fp, nullptr) < 0 )
             {
                 return false;
             }
@@ -141,12 +146,11 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                         // メタイベント
                         int type = fgetc(fp);
                         DEBUGOUT(_T("%s: Meta event starts: offset = %x, type = %d, runningStatus = %02x\n"),  __func__, ftell(fp) - 2, type, c);
-                        long length = readDelta(fp);
-                        DEBUGOUT(_T("%s: Meta event length: %d\n"),  __func__, length);
-                        if ( length < 0 )
-                        {
+                        unsigned long length;
+                        if (readVLV(fp, &length) < 0) {
                             return false;
                         }
+                        DEBUGOUT(_T("%s: Meta event length: %d\n"),  __func__, length);
                         if ( type >= 1 && type <= 3 )
                         {
                             // テキスト(コメント), 著作権(作曲者), シーケンス名(曲名)
@@ -179,12 +183,11 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                     {
                         DEBUGOUT(_T("%s: SysEx starts: offset = %x, runningStatus = %02x\n"),  __func__, ftell(fp) - 1, runningStatus);
                         // SysExは読み飛ばす
-                        long length = readDelta(fp);
-                        DEBUGOUT(_T("%s: SysEx length: %d\n"),  __func__, length);
-                        if ( length < 0 )
-                        {
+                        unsigned long length;
+                        if (readVLV(fp, &length) < 0) {
                             return false;
                         }
+                        DEBUGOUT(_T("%s: SysEx length: %d\n"),  __func__, length);
                         seekOffset = length;
                     }
                 }
