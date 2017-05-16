@@ -158,14 +158,15 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                             // 最初のトラックでなければ曲名として扱わない
                             if ( type != 3 || curTrack == 0 )
                             {
-                                MetaEvent *p = &events[type -1];
-                                if ( p->offset < 0 )
+                                int index = type - 1;
+                                MetaEvent *p = &events[index];
+                                if ( baFound[index] == false )
                                 {
                                     p->length = length;
                                     p->offset = ftell(fp);
                                     p->trkLenOffset = trkLenOffset;
                                 }
-                                baFound[type - 1] = true;
+                                baFound[index] = true;
                                 if ( baFound[META_COMMENT] && baFound[META_COPYRIGHT] && baFound[META_SEQNAME] )
                                 {
                                     return true;
