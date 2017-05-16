@@ -73,7 +73,7 @@ static void writeDelta(FILE *fp, long val)
     }
 }
 
-static int getNumMessageBytes(int status)
+static unsigned long getNumMessageBytes(int status)
 {
     if (status < 0) {
         DEBUGOUT(_T("%s: Invalid status: status = %02x\n"),  __func__, status);
@@ -85,7 +85,7 @@ static int getNumMessageBytes(int status)
         return -1;
     }
     // 8n, 9n, an, bn, cn, dn, en
-    return (const int[]){ 2, 2, 2, 2, 1, 1, 2 }[index];
+    return (const unsigned long[]){ 2, 2, 2, 2, 1, 1, 2 }[index];
 }
 
 bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
