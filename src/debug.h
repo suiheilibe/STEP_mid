@@ -21,12 +21,12 @@ inline void _debugOut(LPCSTR fnname, LPCTSTR fmt, ...)
 #if defined(UNICODE) || defined(_UNICODE)
     MultiByteToWideChar(CP_ACP, 0, fnname, -1, fmtBuf, BUF_SIZE);
 #else
-    strncpy(fmtBuf, fnname, BUF_SIZE);
+    strncpy_s(fmtBuf, BUF_SIZE, fnname, _TRUNCATE);
 #endif
-    _tcsncat(fmtBuf, _T(": "), BUF_SIZE);
-    _tcsncat(fmtBuf, fmt, BUF_SIZE);
+    _tcsncat_s(fmtBuf, BUF_SIZE, _T(": "), _TRUNCATE);
+    _tcsncat_s(fmtBuf, BUF_SIZE, fmt, _TRUNCATE);
     va_start(argp, fmt);
-    _vstprintf_s(buf, BUF_SIZE - 1, fmtBuf, argp);
+    _vstprintf_s(buf, BUF_SIZE, fmtBuf, argp);
     va_end(argp);
     OutputDebugString(buf);
 }
