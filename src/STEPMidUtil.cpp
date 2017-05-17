@@ -43,7 +43,7 @@ bool STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEven
     WCHAR *wbuf = staticWbuf, *heapWbuf = nullptr;
     long maxWcharLengthWithNull = maxLengthWithNull;
 #endif
-    DEBUGOUT(_T("%s: maxLengthWithNull = %d\n"), __func__, maxLengthWithNull);
+    DEBUGOUT("maxLengthWithNull = %d\n", maxLengthWithNull);
     if (maxLengthWithNull > STATIC_META_BUFFER_SIZE) {
         heapBuf = (char *)malloc(maxLengthWithNull * sizeof(char));
         if (heapBuf == nullptr) {
@@ -75,7 +75,7 @@ bool STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEven
             buf[length] = '\0';
 #ifdef STEP_K
             long wcharLengthWithNull = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, -1, nullptr, 0);
-            DEBUGOUT(_T("%s: wcharLengthWithNull = %d, maxWcharLengthWithNull = %d\n"), __func__, wcharLengthWithNull, maxWcharLengthWithNull);
+            DEBUGOUT("wcharLengthWithNull = %d, maxWcharLengthWithNull = %d\n", wcharLengthWithNull, maxWcharLengthWithNull);
             if (wcharLengthWithNull > maxWcharLengthWithNull) {
                 long newSize = wcharLengthWithNull * sizeof(WCHAR);
                 if (heapWbuf == nullptr) {

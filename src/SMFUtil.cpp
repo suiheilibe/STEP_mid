@@ -23,11 +23,11 @@ static int readVLV(FILE *fp, unsigned long *ret)
         }
         c = fgetc(fp);
     }
-    DEBUGOUT(_T("%s: offset = %x, val = %d, i = %d, f = %d\n"),  __func__, ftell(fp) - i, val, i, f);
+    DEBUGOUT("offset = %#010x, val = %d, i = %d, f = %d\n", ftell(fp) - i, val, i, f);
     // 32ビット以上なら不正扱い
     if ( (i == 5 && f > 0x07) || i > 5 )
     {
-        DEBUGOUT(_T("%s: Error\n"),  __func__);
+        DEBUGOUT("Error\n");
         return -1;
     }
 
@@ -75,13 +75,9 @@ static void writeDelta(FILE *fp, long val)
 
 static unsigned long getNumMessageBytes(int status)
 {
-    if (status < 0) {
-        DEBUGOUT(_T("%s: Invalid status: status = %02x\n"),  __func__, status);
-        return -1;
-    }
     int index = ((status & 0xf0) >> 4) - 8;
-    if (index < 0 || 6 < index) {
-        DEBUGOUT(_T("%s: Invalid status: status = %02x\n"),  __func__, status);
+    if (status < 0 || index < 0 || 6 < index) {
+        DEBUGOUT("Invalid status: status = %#04x\n", status);
         return -1;
     }
     // 8n, 9n, an, bn, cn, dn, en
@@ -112,7 +108,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
     for (;;)
     {
         runningStatus = -1;
-        DEBUGOUT(_T("%s: Reading MTrk: offset = %x\n"),  __func__, ftell(fp));
+        DEBUGOUT("Reading MTrk: offset = %#010x\n", ftell(fp));
         if ( fread(buf, sizeof(char), SIG_SIZE, fp) < SIG_SIZE || feof(fp) )
         {
             // ここで終了することがない？
@@ -146,12 +142,12 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                     {
                         // メタイベント
                         int type = fgetc(fp);
-                        DEBUGOUT(_T("%s: Meta event starts: offset = %x, type = %d, runningStatus = %02x\n"),  __func__, ftell(fp) - 2, type, c);
+                        DEBUGOUT("Meta event starts: offset = %#010x, type = %#04x\n", ftell(fp) - 2, type);
                         unsigned long length;
                         if (readVLV(fp, &length) < 0) {
                             return false;
                         }
-                        DEBUGOUT(_T("%s: Meta event length: %d\n"),  __func__, length);
+                        DEBUGOUT("Meta event length: %d\n", length);
                         if ( type >= 1 && type <= 3 )
                         {
                             // テキスト(コメント), 著作権(作曲者), シーケンス名(曲名)
@@ -175,7 +171,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                         }
                         else if ( type == 0x2f )
                         {
-                            DEBUGOUT(_T("%s: End of track %d\n"),  __func__, curTrack + 1);
+                            DEBUGOUT("End of track %d\n", curTrack + 1);
                             // エンドオブトラック
                             break;
                         }
@@ -183,13 +179,13 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                     }
                     else
                     {
-                        DEBUGOUT(_T("%s: SysEx starts: offset = %x, runningStatus = %02x\n"),  __func__, ftell(fp) - 1, runningStatus);
+                        DEBUGOUT("SysEx starts: offset = %#010x, status = %#04x\n", ftell(fp) - 1, runningStatus);
                         // SysExは読み飛ばす
                         unsigned long length;
                         if (readVLV(fp, &length) < 0) {
                             return false;
                         }
-                        DEBUGOUT(_T("%s: SysEx length: %d\n"),  __func__, length);
+                        DEBUGOUT("SysEx length: %d\n", length);
                         seekOffset = length;
                     }
                 }
@@ -197,7 +193,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                 {
                     runningStatus = c;
                     int n = getNumMessageBytes(runningStatus);
-                    DEBUGOUT(_T("%s: Channel message: offset = %x, runningStatus = %02x, size = %d\n"),  __func__, ftell(fp) - 1, runningStatus, n + 1);
+                    DEBUGOUT("Channel message: offset = %#010x, status = %#04x, size = %d\n", ftell(fp) - 1, runningStatus, n + 1);
                     seekOffset = n;
                 }
             }
@@ -208,7 +204,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                     // Invalid runningStatus which violates the running runningStatus rule
                     return false;
                 }
-                DEBUGOUT(_T("%s: Channel message (RS): offset = %x, runningStatus = %02x, size = %d\n"),  __func__, ftell(fp) - 1, runningStatus, n);
+                DEBUGOUT("Channel message (RS): offset = %#010x, status = %#04x, size = %d\n", ftell(fp) - 1, runningStatus, n);
                 seekOffset = n - 1;
             }
             fseek(fp, seekOffset, SEEK_CUR);
