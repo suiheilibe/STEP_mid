@@ -64,9 +64,9 @@ bool STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEven
     for (int i = 0; i < SMFUtil::META_MAX; i++)
     {
         SMFUtil::MetaEvent *p = &events[i];
-        if ( p->offset >= 0 )
+        if ( p->length > 0 )
         {
-            long length = p->length;
+            unsigned long length = p->length;
             fseek(fp, p->offset, SEEK_SET);
             if (fread(buf, sizeof(char), length, fp) < length) {
                 ret = false;
