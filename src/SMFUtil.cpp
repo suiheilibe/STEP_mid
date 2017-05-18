@@ -84,7 +84,7 @@ static unsigned long getNumMessageBytes(int status)
     return (const unsigned long[]){ 2, 2, 2, 2, 1, 1, 2 }[index];
 }
 
-bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
+int SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
 {
     int i;
     char buf[SIG_SIZE];
@@ -96,7 +96,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
     fread(buf, sizeof(char), SIG_SIZE, fp);
     if ( strncmp((const char *)buf, "MThd", 4) )
     {
-        return false;
+        return -1;
     }
     fseek(fp, 10, SEEK_CUR);
     // 初期化
@@ -127,7 +127,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
             // デルタタイムは読み飛ばす
             if ( readVLV(fp, nullptr) < 0 )
             {
-                return false;
+                return -1;
             }
             int c = fgetc(fp);
             if ( c == EOF )
@@ -145,7 +145,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                         DEBUGOUT("Meta event starts: offset = %#010x, type = %#04x\n", ftell(fp) - 2, type);
                         unsigned long length;
                         if (readVLV(fp, &length) < 0) {
-                            return false;
+                            return -1;
                         }
                         DEBUGOUT("Meta event length: %d\n", length);
                         if ( type >= 1 && type <= 3 )
@@ -165,7 +165,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                                 baFound[index] = true;
                                 if ( baFound[META_COMMENT] && baFound[META_COPYRIGHT] && baFound[META_SEQNAME] )
                                 {
-                                    return true;
+                                    return 0;
                                 }
                             }
                         }
@@ -183,7 +183,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                         // SysExは読み飛ばす
                         unsigned long length;
                         if (readVLV(fp, &length) < 0) {
-                            return false;
+                            return -1;
                         }
                         DEBUGOUT("SysEx length: %d\n", length);
                         seekOffset = length;
@@ -202,7 +202,7 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                 int n = getNumMessageBytes(runningStatus);
                 if (n < 0) {
                     // Invalid runningStatus which violates the running runningStatus rule
-                    return false;
+                    return -1;
                 }
                 DEBUGOUT("Channel message (RS): offset = %#010x, status = %#04x, size = %d\n", ftell(fp) - 1, runningStatus, n);
                 seekOffset = n - 1;
@@ -216,5 +216,5 @@ bool SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
         }
         curTrack++;
     }
-    return true;
+    return 0;
 }

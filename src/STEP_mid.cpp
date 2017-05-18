@@ -134,7 +134,7 @@ STEP_API UINT WINAPI STEPLoad(FILE_INFO *pFileMP3, LPCTSTR szExt)
     SMFUtil::MetaEvent events[sizeof(SMFUtil::MetaEvent) * SMFUtil::META_MAX];
     memset(events, 0, sizeof(events));
 
-    if ( SMFUtil::findMetaEvents(fp, events) )
+    if ( SMFUtil::findMetaEvents(fp, events) == 0 )
     {
         if (STEPMidUtil::readMetaEvent(pFileMP3, fp, events)) {
             SetFormat(pFileMP3, nFileTypeMID);
