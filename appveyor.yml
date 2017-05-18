@@ -1,0 +1,2 @@
+install:
+  - '%APPVEYOR_BUILD_FOLDER%\appveyor\install.bat'
