@@ -1,2 +1,6 @@
 install:
+  - git submodule update --init --recursive
   - '%APPVEYOR_BUILD_FOLDER%\appveyor\install.bat'
+
+build:
+  - '%APPVEYOR_BUILD_FOLDER%\appveyor\build.bat'
