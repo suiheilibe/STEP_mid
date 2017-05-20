@@ -73,7 +73,16 @@ static void writeDelta(FILE *fp, long val)
     }
 }
 
-static unsigned long getNumMessageBytes(int status)
+static int fseekULong(FILE *stream, unsigned long offset, int origin)
+{
+    if (offset > LONG_MAX) {
+        DEBUGOUT("Offset excesses 'LONG_MAX'\n");
+        return -1;
+    }
+    return fseek(stream, (long)offset, origin);
+}
+
+static int getNumMessageBytes(int status, unsigned long *ret)
 {
     int index = ((status & 0xf0) >> 4) - 8;
     if (status < 0 || index < 0 || 6 < index) {
@@ -81,26 +90,30 @@ static unsigned long getNumMessageBytes(int status)
         return -1;
     }
     // 8n, 9n, an, bn, cn, dn, en
-    return (const unsigned long[]){ 2, 2, 2, 2, 1, 1, 2 }[index];
+    *ret = (const unsigned long[]){ 2, 2, 2, 2, 1, 1, 2 }[index];
+    return 0;
 }
 
 int SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
 {
-    int i;
     char buf[SIG_SIZE];
-    long curTrack = 0;
+    int curTrack = 0;
     long trkLenOffset = 0;
     bool baFound[META_MAX];// メタイベントが見つかったかどうか
     int runningStatus; // For dealing with running status rule
     // ヘッダ
-    fread(buf, sizeof(char), SIG_SIZE, fp);
+    if (fread(buf, sizeof(char), SIG_SIZE, fp) < SIG_SIZE) {
+        return -1;
+    }
     if ( strncmp((const char *)buf, "MThd", 4) )
     {
         return -1;
     }
-    fseek(fp, 10, SEEK_CUR);
+    if (fseek(fp, 10, SEEK_CUR)) {
+        return -2;
+    }
     // 初期化
-    for (i = 0; i < META_MAX; i++)
+    for (int i = 0; i < META_MAX; i++)
     {
         events[i].offset = -1;
         baFound[i] = false;
@@ -120,7 +133,13 @@ int SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
             break;
         }
         trkLenOffset = ftell(fp);// トラックのサイズを書く場所
-        fseek(fp, 4, SEEK_CUR);// サイズは無視
+        if (trkLenOffset < 0) {
+            return -2;
+        }
+        // サイズは無視
+        if (fseek(fp, 4, SEEK_CUR)) {
+            return -2;
+        }
         for (;;)
         {
             unsigned long seekOffset = 0;
@@ -191,23 +210,29 @@ int SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                 }
                 else
                 {
+                    unsigned long n;
                     runningStatus = c;
-                    int n = getNumMessageBytes(runningStatus);
+                    if (getNumMessageBytes(runningStatus, &n) < 0) {
+                        // Impossible
+                        return -1;
+                    }
                     DEBUGOUT("Channel message: offset = %#010x, status = %#04x, size = %d\n", ftell(fp) - 1, runningStatus, n + 1);
                     seekOffset = n;
                 }
             }
             else
             {
-                int n = getNumMessageBytes(runningStatus);
-                if (n < 0) {
-                    // Invalid runningStatus which violates the running runningStatus rule
+                unsigned long n;
+                if (getNumMessageBytes(runningStatus, &n) < 0) {
+                    // Invalid runningStatus which violates the running status rule
                     return -1;
                 }
                 DEBUGOUT("Channel message (RS): offset = %#010x, status = %#04x, size = %d\n", ftell(fp) - 1, runningStatus, n);
                 seekOffset = n - 1;
             }
-            fseek(fp, seekOffset, SEEK_CUR);
+            if (fseekULong(fp, seekOffset, SEEK_CUR)) {
+                return -2;
+            }
         }
         // 最初のトラックでシーケンス名以外全て見つかった
         if ( baFound[META_COMMENT] && baFound[META_COPYRIGHT] )

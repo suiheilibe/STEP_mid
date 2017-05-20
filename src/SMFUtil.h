@@ -14,9 +14,9 @@ public:
     struct MetaEvent
     {
         // トラックの長さのアドレス
-        unsigned long trkLenOffset;
+        long trkLenOffset;
         // 先頭からのアドレス
-        unsigned long offset;
+        long offset;
         unsigned long length;
     };
     static const int SIG_SIZE = 4;
