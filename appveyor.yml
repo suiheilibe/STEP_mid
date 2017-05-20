@@ -1,3 +1,7 @@
+cache:
+  - c:\msys64\var\cache\pacman\pkg
+  - c:\msys64\var\lib\pacman
+
 install:
   - git submodule update --init --recursive
   - '%APPVEYOR_BUILD_FOLDER%\appveyor\install.bat'
