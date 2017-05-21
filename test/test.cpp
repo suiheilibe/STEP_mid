@@ -32,7 +32,7 @@ TEST_GROUP(SMFUtilTestGroup)
 
 TEST(SMFUtilTestGroup, findMetaEvents)
 {
-    CHECK(SMFUtil::findMetaEvents(fp, events));
+    CHECK(SMFUtil::findMetaEvents(fp, events) == 0);
 }
 
 int main(int argc, char *argv[])
