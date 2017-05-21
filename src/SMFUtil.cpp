@@ -179,9 +179,13 @@ int SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                                 MetaEvent *p = &events[index];
                                 if ( baFound[index] == false )
                                 {
-                                    p->length = length;
-                                    p->offset = ftell(fp);
+                                    long offset = ftell(fp);
+                                    if (offset < 0) {
+                                        return -2;
+                                    }
                                     p->trkLenOffset = trkLenOffset;
+                                    p->offset = offset;
+                                    p->length = length;
                                 }
                                 baFound[index] = true;
                             }
