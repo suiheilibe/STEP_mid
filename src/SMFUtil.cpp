@@ -89,8 +89,10 @@ static int getNumMessageBytes(int status, unsigned long *ret)
         DEBUGOUT("Invalid status: status = %#04x\n", status);
         return -1;
     }
-    // 8n, 9n, an, bn, cn, dn, en
-    *ret = (const unsigned long[]){ 2, 2, 2, 2, 1, 1, 2 }[index];
+    if (ret != nullptr) {
+        // 8n, 9n, an, bn, cn, dn, en
+        *ret = (const unsigned long[]){ 2, 2, 2, 2, 1, 1, 2 }[index];
+    }
     return 0;
 }
 
