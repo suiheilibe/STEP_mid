@@ -136,7 +136,7 @@ STEP_API UINT WINAPI STEPLoad(FILE_INFO *pFileMP3, LPCTSTR szExt)
 
     if ( SMFUtil::findMetaEvents(fp, events) == 0 )
     {
-        if (STEPMidUtil::readMetaEvent(pFileMP3, fp, events)) {
+        if (STEPMidUtil::readMetaEvent(pFileMP3, fp, events) == 0) {
             SetFormat(pFileMP3, nFileTypeMID);
             SetFileTypeName(pFileMP3, _T("MIDI"));
             ret = STEP_SUCCESS;

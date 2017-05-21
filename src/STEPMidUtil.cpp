@@ -33,9 +33,9 @@ static unsigned long getMaxMetaEventLength(SMFUtil::MetaEvent *events)
     return maxLength;
 }
 
-bool STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent *events)
+int STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent *events)
 {
-    bool ret = true;
+    int ret = 0;
     unsigned long maxLength = getMaxMetaEventLength(events);
     if (maxLength > SIZE_MAX / sizeof(char) - 1) {
         maxLength = SIZE_MAX / sizeof(char) - 1;
@@ -53,14 +53,14 @@ bool STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEven
     if (maxLengthWithNull > STATIC_META_BUFFER_SIZE) {
         heapBuf = (char *)malloc(maxLengthWithNull * sizeof(char));
         if (heapBuf == nullptr) {
-            ret = false;
+            ret = -1;
             goto finish;
         }
         buf = heapBuf;
 #ifdef STEP_K
         heapWbuf = (WCHAR *)malloc(maxLengthWithNull * sizeof(WCHAR));
         if (heapWbuf == nullptr) {
-            ret = false;
+            ret = -1;
             goto finish;
         }
         wbuf = heapWbuf;
@@ -78,7 +78,7 @@ bool STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEven
             }
             fseek(fp, p->offset, SEEK_SET);
             if (fread(buf, sizeof(char), length, fp) < length) {
-                ret = false;
+                ret = -1;
                 goto finish;
             }
             buf[length] = '\0';
@@ -101,7 +101,7 @@ bool STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEven
                     heapWbuf = (WCHAR *)realloc(heapWbuf, newSize);
                 }
                 if (heapWbuf == nullptr) {
-                    ret = false;
+                    ret = -1;
                     goto finish;
                 }
                 wbuf = heapWbuf;
