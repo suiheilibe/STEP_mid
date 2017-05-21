@@ -184,10 +184,6 @@ int SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
                                     p->trkLenOffset = trkLenOffset;
                                 }
                                 baFound[index] = true;
-                                if ( baFound[META_COMMENT] && baFound[META_COPYRIGHT] && baFound[META_SEQNAME] )
-                                {
-                                    return 0;
-                                }
                             }
                         }
                         else if ( type == 0x2f )
