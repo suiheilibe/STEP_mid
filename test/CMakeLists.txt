@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 2.8.11)
 
-set(test_lib CppUTest)
+set(test_lib UnitTest++)
 if(MINGW)
   list(APPEND test_lib pthread)
 endif()
-set(test_lib_project cpputest)
-set(test_lib_project_args "-DTESTS=OFF")
+set(test_lib_project unittest-cpp)
+set(test_lib_project_args "-DUTPP_INCLUDE_TESTS_IN_BUILD=OFF")
 
 set(test_target "${target}.test")
 set(test_name "STEP_mid")

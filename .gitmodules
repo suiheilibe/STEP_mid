@@ -1,3 +1,6 @@
 [submodule "external/cpputest"]
 	path = external/cpputest
 	url = git://github.com/cpputest/cpputest.git
+[submodule "external/unittest-cpp"]
+	path = external/unittest-cpp
+	url = https://github.com/unittest-cpp/unittest-cpp
