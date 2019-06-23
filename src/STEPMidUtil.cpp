@@ -57,14 +57,6 @@ int STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent
             goto finish;
         }
         buf = heapBuf;
-#ifdef STEP_K
-        heapWbuf = (WCHAR *)malloc(maxLengthWithNull * sizeof(WCHAR));
-        if (heapWbuf == nullptr) {
-            ret = -1;
-            goto finish;
-        }
-        wbuf = heapWbuf;
-#endif
     }
 
     for (int i = 0; i < SMFUtil::META_MAX; i++)
