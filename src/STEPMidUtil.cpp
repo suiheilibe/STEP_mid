@@ -33,6 +33,44 @@ static unsigned long getMaxMetaEventLength(SMFUtil::MetaEvent *events)
     return maxLength;
 }
 
+static int mbtowc(WCHAR* &wbuf, WCHAR* &heapWbuf, unsigned long &maxWcharLengthWithNull, char *buf, WCHAR *staticWbuf)
+{
+    int mbtowcRet = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, -1, nullptr, 0);
+    if (mbtowcRet <= 0) {
+        DEBUGOUT("'MultiByteToWideChar' returns %d\n", mbtowcRet);
+        //break;
+        return -1;
+    }
+    unsigned long wcharLengthWithNull = (unsigned long)mbtowcRet;
+    if (wcharLengthWithNull > SIZE_MAX / sizeof(WCHAR)) {
+        wcharLengthWithNull = SIZE_MAX / sizeof(WCHAR);
+    }
+    DEBUGOUT("wcharLengthWithNull = %d, maxWcharLengthWithNull = %d\n", wcharLengthWithNull, maxWcharLengthWithNull);
+
+    wbuf = staticWbuf;
+    if (wcharLengthWithNull > maxWcharLengthWithNull) {
+        size_t newSize = wcharLengthWithNull * sizeof(WCHAR);
+        if (heapWbuf == nullptr) {
+            heapWbuf = (WCHAR *)malloc(newSize);
+        } else {
+            heapWbuf = (WCHAR *)realloc(heapWbuf, newSize);
+        }
+        if (heapWbuf == nullptr) {
+            DEBUGOUT("Heap allocation failed\n");
+            return -1;
+        }
+        DEBUGOUT("Heap allocated\n");
+        wbuf = heapWbuf;
+        maxWcharLengthWithNull = wcharLengthWithNull;
+    }
+
+    if (MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, -1, wbuf, wcharLengthWithNull) == 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
 int STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent *events)
 {
     int ret = 0;
@@ -44,13 +82,10 @@ int STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent
     char *buf = staticBuf, *heapBuf = nullptr;
 #ifdef STEP_K
     WCHAR *wbuf = staticWbuf, *heapWbuf = nullptr;
-    unsigned long maxWcharLengthWithNull = maxLengthWithNull;
-    if (maxWcharLengthWithNull > SIZE_MAX / sizeof(WCHAR)) {
-        maxWcharLengthWithNull = SIZE_MAX / sizeof(WCHAR);
-    }
+    unsigned long maxWcharLengthWithNull = STEPMidUtil::STATIC_META_BUFFER_SIZE / sizeof(WCHAR);
 #endif
     DEBUGOUT("maxLengthWithNull = %d\n", maxLengthWithNull);
-    if (maxLengthWithNull > STATIC_META_BUFFER_SIZE) {
+    if (maxLengthWithNull >  STEPMidUtil::STATIC_META_BUFFER_SIZE) {
         heapBuf = (char *)malloc(maxLengthWithNull * sizeof(char));
         if (heapBuf == nullptr) {
             ret = -1;
@@ -75,31 +110,10 @@ int STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent
             }
             buf[length] = '\0';
 #ifdef STEP_K
-            int mbtowcRet = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, -1, nullptr, 0);
-            if (mbtowcRet < 0) {
-                DEBUGOUT("'MultiByteToWideChar' returns %d\n", mbtowcRet);
-                break;
+            if (mbtowc(wbuf, heapWbuf, maxWcharLengthWithNull, buf, staticWbuf) < 0) {
+                ret = -1;
+                goto finish;
             }
-            unsigned long wcharLengthWithNull = (unsigned long)mbtowcRet;
-            if (wcharLengthWithNull > SIZE_MAX / sizeof(WCHAR)) {
-                wcharLengthWithNull = SIZE_MAX / sizeof(WCHAR);
-            }
-            DEBUGOUT("wcharLengthWithNull = %d, maxWcharLengthWithNull = %d\n", wcharLengthWithNull, maxWcharLengthWithNull);
-            if (wcharLengthWithNull > maxWcharLengthWithNull) {
-                size_t newSize = wcharLengthWithNull * sizeof(WCHAR);
-                if (heapWbuf == nullptr) {
-                    heapWbuf = (WCHAR *)malloc(newSize);
-                } else {
-                    heapWbuf = (WCHAR *)realloc(heapWbuf, newSize);
-                }
-                if (heapWbuf == nullptr) {
-                    ret = -1;
-                    goto finish;
-                }
-                wbuf = heapWbuf;
-                maxWcharLengthWithNull = (unsigned long)wcharLengthWithNull;
-            }
-            MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, -1, wbuf, wcharLengthWithNull);
             (saSetFunc[i])(pFileMP3, wbuf);
 #else
             (saSetFunc[i])(pFileMP3, buf);
