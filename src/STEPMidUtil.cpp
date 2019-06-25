@@ -47,7 +47,6 @@ static int mbtowc(WCHAR* &wbuf, WCHAR* &heapWbuf, unsigned long &maxWcharLengthW
     }
     DEBUGOUT("wcharLengthWithNull = %d, maxWcharLengthWithNull = %d\n", wcharLengthWithNull, maxWcharLengthWithNull);
 
-    wbuf = staticWbuf;
     if (wcharLengthWithNull > maxWcharLengthWithNull) {
         size_t newSize = wcharLengthWithNull * sizeof(WCHAR);
         if (heapWbuf == nullptr) {
