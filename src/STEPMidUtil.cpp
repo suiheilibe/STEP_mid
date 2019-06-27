@@ -33,7 +33,7 @@ static unsigned long getMaxMetaEventLength(SMFUtil::MetaEvent *events)
     return maxLength;
 }
 
-static int mbtowc(WCHAR* &wbuf, WCHAR* &heapWbuf, unsigned long &maxWcharLengthWithNull, char *buf, WCHAR *staticWbuf)
+static int mbtowc(WCHAR* &wbuf, WCHAR* &heapWbuf, unsigned long &maxWcharLengthWithNull, char *buf)
 {
     int mbtowcRet = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, -1, nullptr, 0);
     if (mbtowcRet <= 0) {
@@ -109,7 +109,7 @@ int STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent
             }
             buf[length] = '\0';
 #ifdef STEP_K
-            if (mbtowc(wbuf, heapWbuf, maxWcharLengthWithNull, buf, staticWbuf) < 0) {
+            if (mbtowc(wbuf, heapWbuf, maxWcharLengthWithNull, buf) < 0) {
                 ret = -1;
                 goto finish;
             }
