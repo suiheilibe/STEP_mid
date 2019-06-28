@@ -14,7 +14,7 @@ distdir="${rootdir}/dist/${target}"
 mkdir -p "${builddir}"
 cd "${builddir}"
 rm -rf *
-which cmake
+cmake --version
 cmake ../.. -G "${generator}" ${cmakeopts}
 cmake --build . -- ${cmakebuildopts}
 mkdir -p "${distdir}"
