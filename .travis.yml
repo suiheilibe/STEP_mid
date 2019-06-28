@@ -1,4 +1,4 @@
-dist: precise
+dist: trusty
 sudo: false
 
 language: cpp
@@ -6,13 +6,12 @@ language: cpp
 addons:
   apt:
     sources:
-    - kalakris-cmake
+    - sourceline: 'ppa:tobydox/mingw-x-trusty'
     packages:
     - gcc-mingw-w64-i686
     - g++-mingw-w64-i686
     - binutils-mingw-w64-i686
     - wine1.4
-    - cmake
 
 script:
   - cmake --version
