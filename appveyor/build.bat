@@ -4,4 +4,4 @@ SET "PATH=C:\msys64\usr\bin;%PATH%"
 
 @echo on
 
-bash -lc "./build_msys.sh"
+bash -lc "cd $APPVEYOR_BUILD_FOLDER; ./build_msys.sh"
