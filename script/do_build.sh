@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -xeu
 
 rootdir="$1"
 generator="$2"
