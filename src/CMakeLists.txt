@@ -10,8 +10,10 @@ endif()
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR})
+
 set(rcfile "${CMAKE_CURRENT_BINARY_DIR}/resource.rc")
 configure_file(resource.rc.in ${rcfile})
+
 add_library(${target_objs} OBJECT
   ${rcfile}
   STEP_mid.cpp

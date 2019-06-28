@@ -1,18 +1,22 @@
+dist: trusty
+sudo: false
+
 language: cpp
 
-compiler:
-  - gcc
-
-before_install:
-  - sudo add-apt-repository --yes ppa:tobydox/mingw-x-precise
-  - sudo add-apt-repository --yes ppa:kalakris/cmake
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq mingw32-x-binutils mingw32-x-gcc wine cmake
-
-before_script:
-  - export PATH=${PATH}:/opt/mingw32/bin
+addons:
+  apt:
+    sources:
+    - sourceline: 'ppa:tobydox/mingw-x-trusty'
+    packages:
+    - gcc-mingw-w64-i686
+    - g++-mingw-w64-i686
+    - binutils-mingw-w64-i686
+    - wine1.4
 
 script:
+  - cmake --version
+  - i686-w64-mingw32-gcc --version
+  - i686-w64-mingw32-g++ --version
   - mkdir build && cd build
   - cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-mingw32.cmake -DCMAKE_BUILD_TYPE=Release ..
   - make -j4 VERBOSE=1
