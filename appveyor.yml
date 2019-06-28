@@ -9,7 +9,9 @@ install:
   - '%APPVEYOR_BUILD_FOLDER%\appveyor\install.bat'
 
 build_script:
+  - cd %APPVEYOR_BUILD_FOLDER%
   - '%APPVEYOR_BUILD_FOLDER%\appveyor\build.bat'
 
 test_script:
+  - cd %APPVEYOR_BUILD_FOLDER%
   - '%APPVEYOR_BUILD_FOLDER%\appveyor\test.bat'

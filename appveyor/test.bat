@@ -4,4 +4,4 @@ SET "PATH=C:\msys64\usr\bin;%PATH%"
 
 @echo on
 
-bash -lc "cd $APPVEYOR_BUILD_FOLDER; ./test_all.sh"
+bash -lc "./test_all.sh"
