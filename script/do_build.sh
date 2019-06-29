@@ -11,7 +11,12 @@ cmakebuildopts="$6"
 
 realcmakeopts=""
 
-if [[ -n "$buildtype" ]]
+if [[ -n "${generator}" ]]
+then
+    realcmakeopts="${cmakeopts} -G \"${generator}\""
+fi
+
+if [[ -n "${buildtype}" ]]
 then
     realcmakeopts="${cmakeopts} -DCMAKE_BUILD_TYPE=${buildtype}"
 fi
@@ -26,8 +31,8 @@ distdir="${rootdir}/dist/${target}"
 
 mkdir -p "${builddir}"
 cd "${builddir}"
-cmake ../.. -G "${generator}" ${realcmakeopts}
-cmake --build . -- ${cmakebuildopts}
+eval "cmake ../.. ${realcmakeopts}"
+eval "cmake --build . -- ${cmakebuildopts}"
 mkdir -p "${distdir}"
 cp src/STEP_mid.ste "${distdir}"
 cd "${distdir}"
