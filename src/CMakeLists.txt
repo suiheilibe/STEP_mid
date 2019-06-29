@@ -43,8 +43,6 @@ if(STEP_K)
 endif()
 
 # Use .ste as suffix
-# Use C++11 features
-set_target_properties(${target} PROPERTIES PREFIX "" SUFFIX .ste
-                                           CXX_STANDARD 11)
+set_target_properties(${target} PROPERTIES PREFIX "" SUFFIX .ste)
 
 install(TARGETS ${target} LIBRARY DESTINATION .)
