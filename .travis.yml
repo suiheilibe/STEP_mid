@@ -7,8 +7,8 @@ addons:
     packages:
     - g++-mingw-w64-i686
     - binutils-mingw-w64-i686
-    - g++-mingw-w64-x86_64
-    - binutils-mingw-w64-x86_64
+    - g++-mingw-w64-x86-64
+    - binutils-mingw-w64-x86-64
     - wine1.4
 
 env:
