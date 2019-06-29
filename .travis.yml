@@ -5,16 +5,21 @@ language: cpp
 addons:
   apt:
     packages:
-    - gcc-mingw-w64-i686
     - g++-mingw-w64-i686
     - binutils-mingw-w64-i686
+    - g++-mingw-w64-x86_64
+    - binutils-mingw-w64-x86_64
     - wine1.4
+
+env:
+  - TARGET=STEP_K TOOLCHAIN=mingw32
+  - TARGET=STEP_K TOOLCHAIN=mingw64
+  - TARGET=STEP_M TOOLCHAIN=mingw32
 
 script:
   - cmake --version
-  - i686-w64-mingw32-gcc --version
-  - i686-w64-mingw32-g++ --version
-  - mkdir build && cd build
-  - cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-mingw32.cmake -DCMAKE_BUILD_TYPE=Release ..
+  - BUILD_DIR=${TARGET}_${TOOLCHAIN}
+  - mkdir "${BUILD_DIR}" && cd "${BUILD_DIR}"
+  - cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-${TOOLCHAIN}.cmake -DCMAKE_BUILD_TYPE=Release -D${TARGET}=1 ..
   - cmake --build . -- -j4
   - cd test && wine ./STEP_mid.test.exe
