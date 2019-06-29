@@ -16,5 +16,5 @@ script:
   - i686-w64-mingw32-g++ --version
   - mkdir build && cd build
   - cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-mingw32.cmake -DCMAKE_BUILD_TYPE=Release ..
-  - make -j4 VERBOSE=1
+  - cmake --build . -- -j4
   - cd test && wine ./STEP_mid.test.exe
