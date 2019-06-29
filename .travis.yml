@@ -12,9 +12,9 @@ addons:
     - wine1.4
 
 env:
+  - TARGET=STEP_M TOOLCHAIN=mingw32
   - TARGET=STEP_K TOOLCHAIN=mingw32
   - TARGET=STEP_K TOOLCHAIN=mingw64
-  - TARGET=STEP_M TOOLCHAIN=mingw32
 
 script:
   - cmake --version
