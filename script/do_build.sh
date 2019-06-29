@@ -5,16 +5,28 @@ set -xeu
 rootdir="$1"
 generator="$2"
 target="$3"
-cmakeopts="$4"
-cmakebuildopts="$5"
+buildtype="$4"
+cmakeopts="$5"
+cmakebuildopts="$6"
+
+realcmakeopts=""
+
+if [[ -n "$buildtype" ]]
+then
+    realcmakeopts="${cmakeopts} -DCMAKE_BUILD_TYPE=${buildtype}"
+fi
+
+if echo "${target}" | grep "^STEP_K" >/dev/null
+then
+    realcmakeopts="${realcmakeopts} -DSTEP_K=1"
+fi
 
 builddir="${rootdir}/build/${target}"
 distdir="${rootdir}/dist/${target}"
 
 mkdir -p "${builddir}"
 cd "${builddir}"
-rm -rf *
-cmake ../.. -G "${generator}" ${cmakeopts}
+cmake ../.. -G "${generator}" ${realcmakeopts}
 cmake --build . -- ${cmakebuildopts}
 mkdir -p "${distdir}"
 cp src/STEP_mid.ste "${distdir}"
