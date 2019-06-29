@@ -33,7 +33,7 @@ static unsigned long getMaxMetaEventLength(SMFUtil::MetaEvent *events)
     return maxLength;
 }
 
-static int mbtowc(WCHAR* &wbuf, WCHAR* &heapWbuf, unsigned long wcharLengthWithNullLimit, char *buf)
+static int mbtowc(WCHAR* &wbuf, WCHAR* &heapWbuf, unsigned long &wcharLengthWithNullLimit, char *buf)
 {
     int mbtowcRet = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, -1, nullptr, 0);
     if (mbtowcRet <= 0) {
