@@ -91,7 +91,8 @@ static int getNumMessageBytes(int status, unsigned long *ret)
     }
     if (ret != nullptr) {
         // 8n, 9n, an, bn, cn, dn, en
-        *ret = (const unsigned long[]){ 2, 2, 2, 2, 1, 1, 2 }[index];
+        const static unsigned long msgByteLength[] = { 2, 2, 2, 2, 1, 1, 2 };
+        *ret = msgByteLength[index];
     }
     return 0;
 }

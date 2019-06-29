@@ -4,7 +4,7 @@ set -xeu
 
 scriptdir="$( cd -P "$(dirname "$0")" && pwd -P )"
 script="${scriptdir}/script/build_front.sh"
-generator="Visual Studio 15 2017"
+generator="Visual Studio 16 2019"
 cmakeopts=""
 cmakebuildopts=""
 

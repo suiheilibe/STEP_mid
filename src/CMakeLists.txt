@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.8.11)
-
 if(STEP_K)
   include_directories(STEP_K_SDK/STEP_SDK)
   set(steplugin "STEP_K_SDK/STEP_SDK/STEPlugin.cpp")
@@ -44,6 +42,9 @@ if(STEP_K)
   target_compile_definitions(${target_objs} PRIVATE UNICODE=1 _UNICODE=1 STEP_K=1)
 endif()
 
-set_target_properties(${target} PROPERTIES PREFIX "" SUFFIX .ste)
+# Use .ste as suffix
+# Use C++11 features
+set_target_properties(${target} PROPERTIES PREFIX "" SUFFIX .ste
+                                           CXX_STANDARD 11)
 
 install(TARGETS ${target} LIBRARY DESTINATION .)

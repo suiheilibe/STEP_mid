@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.12.4)
 
 project(STEP_mid)
 enable_testing()
@@ -16,7 +16,7 @@ endif()
 # TODO: Separate this block to an individual file
 if(MINGW)
   set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -static")
-  set(CMAKE_CXX_FLAGS  "-Wall -Wextra -std=c++11")
+  set(CMAKE_CXX_FLAGS  "-Wall -Wextra")
   set(CMAKE_CXX_FLAGS_DEBUG  "-g -DDEBUG -D_DEBUG")
 elseif(MSVC)
   foreach(flag_var
