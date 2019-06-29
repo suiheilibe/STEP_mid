@@ -1,12 +1,10 @@
-dist: trusty
+dist: xenial
 sudo: false
 
 language: cpp
 
 addons:
   apt:
-    sources:
-    - sourceline: 'ppa:tobydox/mingw-x-trusty'
     packages:
     - gcc-mingw-w64-i686
     - g++-mingw-w64-i686
