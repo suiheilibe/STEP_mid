@@ -33,7 +33,8 @@ if(STEP_K)
   target_compile_definitions(${test_target} PRIVATE UNICODE=1 _UNICODE=1)
 endif()
 
-file(COPY test.mid DESTINATION .)
+file(GLOB test_files "*.mid")
+file(COPY ${test_files} DESTINATION .)
 
 add_test(NAME ${test_name} COMMAND ${test_target})
 
