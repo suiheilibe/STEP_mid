@@ -97,9 +97,9 @@ int STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent
     char *buf = staticBuf, *heapBuf = nullptr;
 #ifdef STEP_K
     struct BufferInfo wcharBufferInfo = {
-        .buf = staticWbuf,
-        .heapBuf = nullptr,
-        .lengthWithNullLimit = STEPMidUtil::STATIC_META_BUFFER_SIZE / sizeof(WCHAR)
+        staticWbuf,
+        nullptr,
+        STEPMidUtil::STATIC_META_BUFFER_SIZE / sizeof(WCHAR)
     };
 #endif
     DEBUGOUT("lengthWithNullLimit = %d\n", lengthWithNullLimit);
