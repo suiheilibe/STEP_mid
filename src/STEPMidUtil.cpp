@@ -33,9 +33,19 @@ static unsigned long getMaxMetaEventLength(SMFUtil::MetaEvent *events)
     return maxLength;
 }
 
+struct BufferInfo {
+    void *buf;
+    void *heapBuf;
+    unsigned long lengthWithNullLimit;
+};
+
 #ifdef STEP_K
-static int mbtowcAndUpdateBufferInfo(WCHAR* &wbuf, WCHAR* &heapWbuf, unsigned long &wcharLengthWithNullLimit, char *buf)
+static int mbtowcAndUpdateBufferInfo(char * const &buf, struct BufferInfo *binfo)
 {
+    WCHAR *wbuf = (WCHAR *)binfo->buf;
+    WCHAR *heapWbuf = (WCHAR *)binfo->heapBuf;
+    unsigned long wcharLengthWithNullLimit = binfo->lengthWithNullLimit;
+
     int mbtowcRet = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, -1, nullptr, 0);
     if (mbtowcRet <= 0) {
         DEBUGOUT("'MultiByteToWideChar' returns %d\n", mbtowcRet);
@@ -64,6 +74,10 @@ static int mbtowcAndUpdateBufferInfo(WCHAR* &wbuf, WCHAR* &heapWbuf, unsigned lo
         wcharLengthWithNullLimit = wcharLengthWithNull;
     }
 
+    binfo->buf = wbuf;
+    binfo->heapBuf = heapWbuf;
+    binfo->lengthWithNullLimit = wcharLengthWithNullLimit;
+
     if (MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, -1, wbuf, wcharLengthWithNull) == 0) {
         return -1;
     }
@@ -82,8 +96,11 @@ int STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent
     unsigned long lengthWithNullLimit = maxLength + 1;
     char *buf = staticBuf, *heapBuf = nullptr;
 #ifdef STEP_K
-    WCHAR *wbuf = staticWbuf, *heapWbuf = nullptr;
-    unsigned long wcharLengthWithNullLimit = STEPMidUtil::STATIC_META_BUFFER_SIZE / sizeof(WCHAR);
+    struct BufferInfo wcharBufferInfo = {
+        .buf = staticWbuf,
+        .heapBuf = nullptr,
+        .lengthWithNullLimit = STEPMidUtil::STATIC_META_BUFFER_SIZE / sizeof(WCHAR)
+    };
 #endif
     DEBUGOUT("lengthWithNullLimit = %d\n", lengthWithNullLimit);
     if (lengthWithNullLimit >  STEPMidUtil::STATIC_META_BUFFER_SIZE) {
@@ -111,11 +128,11 @@ int STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent
             }
             buf[length] = '\0';
 #ifdef STEP_K
-            if (mbtowcAndUpdateBufferInfo(wbuf, heapWbuf, wcharLengthWithNullLimit, buf) < 0) {
+            if (mbtowcAndUpdateBufferInfo(buf, &wcharBufferInfo) < 0) {
                 ret = -1;
                 goto finish;
             }
-            (saSetFunc[i])(pFileMP3, wbuf);
+            (saSetFunc[i])(pFileMP3, (WCHAR *)wcharBufferInfo.buf);
 #else
             (saSetFunc[i])(pFileMP3, buf);
 #endif
@@ -125,7 +142,7 @@ int STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent
 finish:
     if (heapBuf != nullptr) free(heapBuf);
 #ifdef STEP_K
-    if (heapWbuf != nullptr) free(heapWbuf);
+    if (wcharBufferInfo.heapBuf != nullptr) free(wcharBufferInfo.heapBuf);
 #endif
 
     return ret;
