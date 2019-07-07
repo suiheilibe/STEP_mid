@@ -18,7 +18,7 @@ static char staticBuf[STEPMidUtil::STATIC_META_BUFFER_SIZE];
 static WCHAR staticWbuf[STEPMidUtil::STATIC_META_BUFFER_SIZE];
 #endif
 
-static unsigned long getMaxMetaEventLength(SMFUtil::MetaEvent *events)
+static unsigned long getMaxMetaEventLength(const SMFUtil::MetaEvent* const& events)
 {
     unsigned long maxLength = 0;
     unsigned long length;
@@ -40,7 +40,7 @@ struct BufferInfo {
 };
 
 #ifdef STEP_K
-static int mbtowcAndUpdateBufferInfo(char * const &buf, struct BufferInfo *binfo)
+static int mbtowcAndUpdateBufferInfo(char* const& buf, struct BufferInfo* const binfo)
 {
     WCHAR *wbuf = (WCHAR *)binfo->buf;
     WCHAR *heapWbuf = (WCHAR *)binfo->heapBuf;
@@ -86,7 +86,7 @@ static int mbtowcAndUpdateBufferInfo(char * const &buf, struct BufferInfo *binfo
 }
 #endif
 
-int STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent *events)
+int STEPMidUtil::readMetaEvent(FILE_INFO* const& pFileMP3, FILE* const& fp, const SMFUtil::MetaEvent* const& events)
 {
     int ret = 0;
     unsigned long maxLength = getMaxMetaEventLength(events);
@@ -114,7 +114,7 @@ int STEPMidUtil::readMetaEvent(FILE_INFO *pFileMP3, FILE *fp, SMFUtil::MetaEvent
 
     for (int i = 0; i < SMFUtil::META_MAX; i++)
     {
-        SMFUtil::MetaEvent *p = &events[i];
+        const SMFUtil::MetaEvent *p = &events[i];
         if ( p->length > 0 )
         {
             unsigned long length = p->length;
