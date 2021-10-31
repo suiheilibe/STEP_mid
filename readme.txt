@@ -2,7 +2,7 @@ STEP_mid Version 0.2.0
 
 [概要]
 
-STEP_M (http://mimumimu.net/) および STEP_K (http://hwm5.gyao.ne.jp/kobarin/)
+STEP_M (http://mimumimu.net/) および STEP_K (https://kobarin.sakura.ne.jp/)
 用の MIDI ファイル (SMF) 用プラグインです。
 
 SMF のシーケンス名をトラック名、コピーライトをアーティスト名、テキストをコメントに対応させています。
@@ -14,10 +14,10 @@ SMF のシーケンス名をトラック名、コピーライトをアーティ�
 
 STEP_M 用には STEP_M フォルダの STEP_mid.ste
 STEP_K (x86) 用には STEP_K_x86 フォルダの STEP_mid.ste
-STEP_K (x64) 用には STEP_K_x86 フォルダの STEP_mid.ste
+STEP_K (x64) 用には STEP_K_x64 フォルダの STEP_mid.ste
 をそれぞれインストールしてください。
 
-Windows Server 2008 R2 上の STEP_M, STEP_K (x86, x64) で動作を確認しています。
+Windows Server 2008 R2, Windows 10 上の STEP_M, STEP_K (x86, x64) で動作を確認しています。
 特殊なファイルへの依存はないので Windows XP や Windows 7 でも動くと思います。
 
 [制限]
