@@ -1,0 +1,14 @@
+#include <windows.h>
+#include "resource.h"
+#include "version.h"
+
+#pragma code_page(932)
+
+#define PLUGININFO "Version " VERSION "\r\nMIDIファイルをサポートしています"
+
+LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGININFO PLUGININFO
+END
