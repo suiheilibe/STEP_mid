@@ -5,5 +5,7 @@
 *.exp
 *.exe
 *.swp
-dist/
-build/
+*.aps
+/dist/
+/build/
+/.vs
