@@ -63,8 +63,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\src\STEP_mid_k.def">
-      <Filter>ソース ファイル</Filter>
-    </None>
+    <None Include="..\..\src\STEP_mid_k.def" />
   </ItemGroup>
 </Project>
