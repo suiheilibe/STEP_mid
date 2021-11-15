@@ -152,25 +152,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\SMFUtil.cpp" />
-    <ClCompile Include="..\..\src\STEPMidUtil.cpp" />
-    <ClCompile Include="..\..\src\STEP_K_SDK\STEP_SDK\STEPlugin.cpp" />
-    <ClCompile Include="..\..\src\STEP_mid.cpp" />
+    <ClCompile Include="src\SMFUtil.cpp" />
+    <ClCompile Include="src\STEPMidUtil.cpp" />
+    <ClCompile Include="src\STEP_K_SDK\STEP_SDK\STEPlugin.cpp" />
+    <ClCompile Include="src\STEP_mid.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\debug.h" />
-    <ClInclude Include="..\..\src\resource.h" />
-    <ClInclude Include="..\..\src\SMFUtil.h" />
-    <ClInclude Include="..\..\src\STEPMidUtil.h" />
+    <ClInclude Include="src\debug.h" />
+    <ClInclude Include="src\resource.h" />
+    <ClInclude Include="src\SMFUtil.h" />
+    <ClInclude Include="src\STEPMidUtil.h" />
     <ClInclude Include="..\..\src\STEP_K_SDK\STEP_SDK\STEPlugin.h" />
     <ClInclude Include="..\..\src\STEP_K_SDK\STEP_SDK\STEP_api.h" />
-    <ClInclude Include="..\..\src\version.h" />
+    <ClInclude Include="src\version.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\src\resource.rc" />
+    <None Include="src\STEP_mid_k.def" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\src\STEP_mid_k.def" />
+    <ResourceCompile Include="src\resource.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
