@@ -31,7 +31,12 @@ if(MINGW)
   endif()
   add_library(${target} MODULE ${expfile} $<TARGET_OBJECTS:${target_objs}>)
 else()
-  add_library(${target} MODULE $<TARGET_OBJECTS:${target_objs}>)
+  if(STEP_K)
+    add_library(${target} MODULE $<TARGET_OBJECTS:${target_objs}> STEP_mid_k.def)
+  else()
+    # TODO: Add underscores to "EXPORTS" for Visual Studio
+    add_library(${target} MODULE $<TARGET_OBJECTS:${target_objs}> STEP_mid_m.def)
+  endif()
 endif()
 
 if(STEP_K)
