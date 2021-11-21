@@ -1,4 +1,4 @@
-build: Script
+build: off
 
 cache:
   - c:\msys64\var\cache\pacman\pkg
