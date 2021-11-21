@@ -45,6 +45,8 @@ ExternalProject_Add(
   SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../external/${test_lib_project}"
   CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}"
              "-DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}"
+             # XXX: Visual Studio 2022 needs explicit CMAKE_BUILD_TYPE setting. I'm not sure why
+             "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
              ${test_lib_project_args}
 )
 
