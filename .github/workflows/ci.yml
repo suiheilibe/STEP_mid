@@ -23,9 +23,11 @@ jobs:
       - run: ./test_all.sh
   build:
     needs: setup
+    runs-on: windows-latest
     steps:
       - run: ./build_msys.sh
   test:
     needs: build
+    runs-on: windows-latest
     steps:
       - run: ./test_all.sh
