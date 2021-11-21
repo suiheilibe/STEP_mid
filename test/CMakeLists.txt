@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.8.11)
-
 set(test_lib CppUTest)
 if(MINGW)
   list(APPEND test_lib pthread)
