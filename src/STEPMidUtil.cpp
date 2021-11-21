@@ -18,13 +18,13 @@ static char staticBuf[STEPMidUtil::STATIC_META_BUFFER_SIZE];
 static WCHAR staticWbuf[STEPMidUtil::STATIC_META_BUFFER_SIZE];
 #endif
 
-static unsigned long getMaxMetaEventLength(const SMFUtil::MetaEvent* const& events)
+static size_t getMaxMetaEventLength(const SMFUtil::MetaEvent* const& events)
 {
-    unsigned long maxLength = 0;
-    unsigned long length;
+    size_t maxLength = 0;
+
     for (int i = 0; i < SMFUtil::META_MAX; i++)
     {
-        length = events[i].length;
+        size_t length = events[i].length;
         if (maxLength < length) {
             maxLength = length;
         }
@@ -36,7 +36,7 @@ static unsigned long getMaxMetaEventLength(const SMFUtil::MetaEvent* const& even
 struct BufferInfo {
     void *buf;
     void *heapBuf;
-    unsigned long lengthWithNullLimit;
+    size_t lengthWithNullLimit;
 };
 
 #ifdef STEP_K
@@ -44,7 +44,7 @@ static int mbtowcAndUpdateBufferInfo(char* const& buf, struct BufferInfo* const 
 {
     WCHAR *wbuf = (WCHAR *)binfo->buf;
     WCHAR *heapWbuf = (WCHAR *)binfo->heapBuf;
-    unsigned long wcharLengthWithNullLimit = binfo->lengthWithNullLimit;
+    size_t wcharLengthWithNullLimit = binfo->lengthWithNullLimit;
 
     int mbtowcRet = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, -1, nullptr, 0);
     if (mbtowcRet <= 0) {
@@ -52,7 +52,7 @@ static int mbtowcAndUpdateBufferInfo(char* const& buf, struct BufferInfo* const 
         //break;
         return -1;
     }
-    unsigned long wcharLengthWithNull = (unsigned long)mbtowcRet;
+    size_t wcharLengthWithNull = (size_t)mbtowcRet;
     if (wcharLengthWithNull > SIZE_MAX / sizeof(WCHAR)) {
         wcharLengthWithNull = SIZE_MAX / sizeof(WCHAR);
     }
@@ -89,11 +89,11 @@ static int mbtowcAndUpdateBufferInfo(char* const& buf, struct BufferInfo* const 
 int STEPMidUtil::readMetaEvent(FILE_INFO* const& pFileMP3, FILE* const& fp, const SMFUtil::MetaEvent* const& events)
 {
     int ret = 0;
-    unsigned long maxLength = getMaxMetaEventLength(events);
+    size_t maxLength = getMaxMetaEventLength(events);
     if (maxLength > SIZE_MAX / sizeof(char) - 1) {
         maxLength = SIZE_MAX / sizeof(char) - 1;
     }
-    unsigned long lengthWithNullLimit = maxLength + 1;
+    size_t lengthWithNullLimit = maxLength + 1;
     char *buf = staticBuf, *heapBuf = nullptr;
 #ifdef STEP_K
     struct BufferInfo wcharBufferInfo = {
