@@ -11,7 +11,7 @@
 #include "debug.h"
 
 static void (*saSetFunc[])(FILE_INFO*,LPCTSTR) = {SetComment, SetArtistName, SetTrackName};
-static LPCTSTR (*saGetFunc[])(FILE_INFO*) = {GetComment, GetArtistName, GetTrackName};
+// static LPCTSTR (*saGetFunc[])(FILE_INFO*) = {GetComment, GetArtistName, GetTrackName};
 
 static char staticBuf[STEPMidUtil::STATIC_META_BUFFER_SIZE];
 #ifdef STEP_K
