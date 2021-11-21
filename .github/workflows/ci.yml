@@ -1,3 +1,5 @@
+name: Build and test
+
 on: [push]
 
 defaults:
@@ -5,7 +7,7 @@ defaults:
     shell: msys2 {0}
 
 jobs:
-  setup:
+  ci:
     runs-on: windows-latest
     steps:
       - uses: msys2/setup-msys2@v2
@@ -19,16 +21,9 @@ jobs:
             mingw-w64-i686-cmake
             mingw-w64-x86_64-cmake
       - uses: actions/checkout@v2
-      - run: git submodule update --init --recursive
-      - run: ./build_msys.sh
-      - run: ./test_all.sh
-  build:
-    needs: setup
-    runs-on: windows-latest
-    steps:
-      - run: ./build_msys.sh
-  test:
-    needs: build
-    runs-on: windows-latest
-    steps:
-      - run: ./test_all.sh
+      - name: Update submodules
+        run: git submodule update --init --recursive
+      - name: Build
+        run: ./build_msys.sh
+      - name: Test
+        run: ./test_all.sh
