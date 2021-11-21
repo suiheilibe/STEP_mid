@@ -1,3 +1,5 @@
+build: Script
+
 cache:
   - c:\msys64\var\cache\pacman\pkg
   - c:\msys64\var\lib\pacman\sync
