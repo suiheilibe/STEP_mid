@@ -19,6 +19,7 @@ jobs:
             mingw-w64-i686-cmake
             mingw-w64-x86_64-cmake
       - uses: actions/checkout@v2
+      - run: git submodule update --init --recursive
       - run: ./build_msys.sh
       - run: ./test_all.sh
   build:
