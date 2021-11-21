@@ -1,0 +1,24 @@
+on: [push]
+
+defaults:
+  run:
+    shell: msys2 {0}
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >-
+            base-devel
+            mingw-w64-i686-toolchain
+            mingw-w64-x86_64-toolchain
+            mingw-w64-i686-cmake
+            mingw-w64-x86_64-cmake
+      - uses: actions/checkout@v2
+      - run: |
+        ./build_msys.sh
+      - run: |
+        ./test_all.sh
