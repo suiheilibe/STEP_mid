@@ -16,9 +16,7 @@ endif()
 # Use C++11 features
 set(CMAKE_CXX_STANDARD 11)
 
-# TODO: Separate this block to an individual file
 if(MINGW)
-  set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -static")
   set(CMAKE_CXX_FLAGS  "-Wall -Wextra")
   set(CMAKE_CXX_FLAGS_DEBUG  "-g -DDEBUG -D_DEBUG")
 endif()

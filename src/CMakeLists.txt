@@ -17,25 +17,24 @@ add_library(${target_objs} OBJECT
   ${steplugin})
 
 if(MINGW)
+  set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -static -Wl,--enable-stdcall-fixup")
   set(expfile "${CMAKE_CURRENT_BINARY_DIR}/STEP_mid.exp.obj")
   if(STEP_K)
-    add_custom_command(
-      OUTPUT ${expfile}
-      COMMAND ${CMAKE_DLLTOOL} -e ${expfile} -d "${CMAKE_CURRENT_SOURCE_DIR}/STEP_mid_k.def"
-    )
+    set(deffile "${CMAKE_CURRENT_SOURCE_DIR}/STEP_mid_k.def")
   else()
-    add_custom_command(
-      OUTPUT ${expfile}
-      COMMAND ${CMAKE_DLLTOOL} -e ${expfile} --add-stdcall-underscore -d "${CMAKE_CURRENT_SOURCE_DIR}/STEP_mid_m.def"
-    )
+    set(deffile "${CMAKE_CURRENT_SOURCE_DIR}/STEP_mid_m.def")
   endif()
+  add_custom_command(
+    OUTPUT ${expfile}
+    COMMAND ${CMAKE_DLLTOOL} -e "${expfile}" -d "${deffile}"
+    DEPENDS ${deffile}
+  )
   add_library(${target} MODULE ${expfile} $<TARGET_OBJECTS:${target_objs}>)
 else()
   if(STEP_K)
     add_library(${target} MODULE $<TARGET_OBJECTS:${target_objs}> STEP_mid_k.def)
   else()
-    # TODO: Add underscores to "EXPORTS" for Visual Studio
-    add_library(${target} MODULE $<TARGET_OBJECTS:${target_objs}> STEP_mid_m.def)
+    add_library(${target} MODULE $<TARGET_OBJECTS:${target_objs}>)
   endif()
 endif()
 
