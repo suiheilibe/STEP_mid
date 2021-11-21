@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xeu
+set -euo pipefail
 
 rootdir="$1"
 script="${rootdir}/script/do_build.sh"

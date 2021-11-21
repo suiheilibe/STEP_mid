@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 scriptdir="$( cd -P "$(dirname "$0")" && pwd -P )"
 
 MSYSTEM=MINGW32 /bin/bash -lc "cd ${scriptdir}/build/STEP_M && ctest" &

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xeu
+set -euo pipefail
 
 rootdir="$1"
 generator="$2"
