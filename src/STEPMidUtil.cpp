@@ -1,8 +1,11 @@
+// to use std::min with MSVC
+#define NOMINMAX
 #include <windows.h>
 #include <tchar.h>
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <algorithm>
+#include <cstdio>
+#include <cstdlib>
 
 #include "STEPlugin.h"
 
@@ -53,8 +56,8 @@ static int mbtowcAndUpdateBufferInfo(char* const& buf, struct WcharBufferInfo* c
         return -1;
     }
     int wcharLengthWithNull = mbtowcRet;
-    if (wcharLengthWithNull > min(SIZE_MAX / sizeof(WCHAR), INT_MAX)) {
-        wcharLengthWithNull = min(SIZE_MAX / sizeof(WCHAR), INT_MAX);
+    if (wcharLengthWithNull > (int)std::min(SIZE_MAX / sizeof(WCHAR), (size_t)INT_MAX)) {
+        wcharLengthWithNull = (int)std::min(SIZE_MAX / sizeof(WCHAR), (size_t)INT_MAX);
     }
     DEBUGOUT("wcharLengthWithNull = %d, wcharLengthWithNullLimit = %d\n", wcharLengthWithNull, wcharLengthWithNullLimit );
 
@@ -93,8 +96,8 @@ int STEPMidUtil::readMetaEvent(FILE_INFO* const& pFileMP3, FILE* const& fp, cons
 {
     int ret = 0;
     int maxLength = getMaxMetaEventLength(events);
-    if (maxLength > min(SIZE_MAX / sizeof(char), INT_MAX) - 1) {
-        maxLength = min(SIZE_MAX / sizeof(char), INT_MAX) - 1;
+    if (maxLength > (int)std::min(SIZE_MAX / sizeof(char), (size_t)INT_MAX) - 1) {
+        maxLength = (int)std::min(SIZE_MAX / sizeof(char), (size_t)INT_MAX) - 1;
     }
     int lengthWithNullLimit = maxLength + 1;
     char *buf = staticBuf, *heapBuf = nullptr;
