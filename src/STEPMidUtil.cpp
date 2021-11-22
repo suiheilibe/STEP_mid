@@ -18,13 +18,13 @@ static char staticBuf[STEPMidUtil::STATIC_META_BUFFER_SIZE];
 static WCHAR staticWbuf[STEPMidUtil::STATIC_META_BUFFER_SIZE];
 #endif
 
-static size_t getMaxMetaEventLength(const SMFUtil::MetaEvent* const& events)
+static int getMaxMetaEventLength(const SMFUtil::MetaEvent* const& events)
 {
-    size_t maxLength = 0;
+    int maxLength = 0;
 
     for (int i = 0; i < SMFUtil::META_MAX; i++)
     {
-        size_t length = events[i].length;
+        int length = events[i].length;
         if (maxLength < length) {
             maxLength = length;
         }
@@ -33,18 +33,18 @@ static size_t getMaxMetaEventLength(const SMFUtil::MetaEvent* const& events)
     return maxLength;
 }
 
-struct BufferInfo {
+struct WcharBufferInfo {
     void *buf;
     void *heapBuf;
-    size_t lengthWithNullLimit;
+    int wcharLengthWithNullLimit;
 };
 
 #ifdef STEP_K
-static int mbtowcAndUpdateBufferInfo(char* const& buf, struct BufferInfo* const binfo)
+static int mbtowcAndUpdateBufferInfo(char* const& buf, struct WcharBufferInfo* const binfo)
 {
     WCHAR *wbuf = (WCHAR *)binfo->buf;
     WCHAR *heapWbuf = (WCHAR *)binfo->heapBuf;
-    size_t wcharLengthWithNullLimit = binfo->lengthWithNullLimit;
+    int wcharLengthWithNullLimit = binfo->wcharLengthWithNullLimit;
 
     int mbtowcRet = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, -1, nullptr, 0);
     if (mbtowcRet <= 0) {
@@ -52,9 +52,9 @@ static int mbtowcAndUpdateBufferInfo(char* const& buf, struct BufferInfo* const 
         //break;
         return -1;
     }
-    size_t wcharLengthWithNull = (size_t)mbtowcRet;
-    if (wcharLengthWithNull > SIZE_MAX / sizeof(WCHAR)) {
-        wcharLengthWithNull = SIZE_MAX / sizeof(WCHAR);
+    int wcharLengthWithNull = mbtowcRet;
+    if (wcharLengthWithNull > min(SIZE_MAX / sizeof(WCHAR), INT_MAX)) {
+        wcharLengthWithNull = min(SIZE_MAX / sizeof(WCHAR), INT_MAX);
     }
     DEBUGOUT("wcharLengthWithNull = %d, wcharLengthWithNullLimit = %d\n", wcharLengthWithNull, wcharLengthWithNullLimit );
 
@@ -76,11 +76,14 @@ static int mbtowcAndUpdateBufferInfo(char* const& buf, struct BufferInfo* const 
 
     binfo->buf = wbuf;
     binfo->heapBuf = heapWbuf;
-    binfo->lengthWithNullLimit = wcharLengthWithNullLimit;
+    binfo->wcharLengthWithNullLimit = wcharLengthWithNullLimit;
 
     if (MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buf, -1, wbuf, wcharLengthWithNull) == 0) {
         return -1;
     }
+
+    // for the corner case where `mbtowcRet` is larger than (SIZE_MAX / sizeof(WCHAR)) (but probably impossible)
+    wbuf[wcharLengthWithNull - 1] = L'\0';
 
     return 0;
 }
@@ -89,21 +92,21 @@ static int mbtowcAndUpdateBufferInfo(char* const& buf, struct BufferInfo* const 
 int STEPMidUtil::readMetaEvent(FILE_INFO* const& pFileMP3, FILE* const& fp, const SMFUtil::MetaEvent* const& events)
 {
     int ret = 0;
-    size_t maxLength = getMaxMetaEventLength(events);
-    if (maxLength > SIZE_MAX / sizeof(char) - 1) {
-        maxLength = SIZE_MAX / sizeof(char) - 1;
+    int maxLength = getMaxMetaEventLength(events);
+    if (maxLength > min(SIZE_MAX / sizeof(char), INT_MAX) - 1) {
+        maxLength = min(SIZE_MAX / sizeof(char), INT_MAX) - 1;
     }
-    size_t lengthWithNullLimit = maxLength + 1;
+    int lengthWithNullLimit = maxLength + 1;
     char *buf = staticBuf, *heapBuf = nullptr;
 #ifdef STEP_K
-    struct BufferInfo wcharBufferInfo = {
+    struct WcharBufferInfo wcharBufferInfo = {
         staticWbuf,
         nullptr,
         STEPMidUtil::STATIC_META_BUFFER_SIZE / sizeof(WCHAR)
     };
 #endif
     DEBUGOUT("lengthWithNullLimit = %d\n", lengthWithNullLimit);
-    if (lengthWithNullLimit >  STEPMidUtil::STATIC_META_BUFFER_SIZE) {
+    if (lengthWithNullLimit > STEPMidUtil::STATIC_META_BUFFER_SIZE) {
         heapBuf = (char *)malloc(lengthWithNullLimit * sizeof(char));
         if (heapBuf == nullptr) {
             ret = -1;
@@ -117,7 +120,7 @@ int STEPMidUtil::readMetaEvent(FILE_INFO* const& pFileMP3, FILE* const& fp, cons
         const SMFUtil::MetaEvent *p = &events[i];
         if ( p->length > 0 )
         {
-            unsigned long length = p->length;
+            int length = p->length;
             if (length > maxLength) {
                 length = maxLength;
             }
