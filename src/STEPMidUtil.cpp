@@ -62,19 +62,22 @@ static int mbtowcAndUpdateBufferInfo(const char* const buf, struct WcharBufferIn
     DEBUGOUT("wcharLengthWithNull = %d, wcharLengthWithNullLimit = %d\n", wcharLengthWithNull, wcharLengthWithNullLimit );
 
     if (wcharLengthWithNull > wcharLengthWithNullLimit) {
+        WCHAR *newHeapWbuf = nullptr;
         size_t newSize = wcharLengthWithNull * sizeof(WCHAR);
         if (heapWbuf == nullptr) {
-            heapWbuf = (WCHAR *)malloc(newSize);
+            newHeapWbuf = (WCHAR *)malloc(newSize);
         } else {
-            heapWbuf = (WCHAR *)realloc(heapWbuf, newSize);
+            newHeapWbuf = (WCHAR *)realloc(heapWbuf, newSize);
         }
-        if (heapWbuf == nullptr) {
+        if (newHeapWbuf == nullptr) {
             DEBUGOUT("Heap allocation failed\n");
             return -1;
+        } else {
+            DEBUGOUT("Heap allocated\n");
+            heapWbuf = newHeapWbuf;
+            wbuf = heapWbuf;
+            wcharLengthWithNullLimit = wcharLengthWithNull;
         }
-        DEBUGOUT("Heap allocated\n");
-        wbuf = heapWbuf;
-        wcharLengthWithNullLimit = wcharLengthWithNull;
     }
 
     binfo->buf = wbuf;
