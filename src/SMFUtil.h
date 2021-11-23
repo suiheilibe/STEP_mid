@@ -20,7 +20,7 @@ public:
         unsigned long length;
     };
     static const int SIG_SIZE = 4;
-    static int findMetaEvents(FILE *fp, MetaEvent *events);
+    static int findMetaEvents(FILE* const fp, MetaEvent* const events);
 };
 
 #endif

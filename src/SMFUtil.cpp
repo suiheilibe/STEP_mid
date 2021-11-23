@@ -97,7 +97,7 @@ static int getNumMessageBytes(int status, unsigned long *ret)
     return 0;
 }
 
-int SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events) {
+int SMFUtil::findMetaEvents(FILE* const fp, MetaEvent* const events) {
     char sigBuf[SIG_SIZE + 1];
     int curTrack = 0;
     long trkLenOffset = 0;
