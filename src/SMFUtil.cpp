@@ -97,21 +97,22 @@ static int getNumMessageBytes(int status, unsigned long *ret)
     return 0;
 }
 
-int SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
-{
-    char buf[SIG_SIZE];
+int SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events) {
+    char sigBuf[SIG_SIZE + 1];
     int curTrack = 0;
     long trkLenOffset = 0;
-    bool baFound[META_MAX];// メタイベントが見つかったかどうか
-    int runningStatus; // For dealing with running status rule
-    // ヘッダ
-    if (fread(buf, sizeof(char), SIG_SIZE, fp) < SIG_SIZE) {
+    bool baFound[META_MAX]; // メタイベントが見つかったかどうか
+    int runningStatus;      // For dealing with running status rule
+
+    // SMF header check
+    if (fread(sigBuf, sizeof(char), SIG_SIZE, fp) != SIG_SIZE) {
         return -1;
     }
-    if ( strncmp((const char *)buf, "MThd", 4) )
-    {
+    sigBuf[SIG_SIZE] = '\0';
+    if (strncmp((const char *)sigBuf, "MThd", 4)) {
         return -1;
     }
+
     if (fseek(fp, 10, SEEK_CUR)) {
         return -2;
     }
@@ -125,12 +126,13 @@ int SMFUtil::findMetaEvents(FILE *fp, MetaEvent *events)
     {
         runningStatus = -1;
         DEBUGOUT("Reading MTrk: offset = %#010x\n", ftell(fp));
-        if ( fread(buf, sizeof(char), SIG_SIZE, fp) < SIG_SIZE || feof(fp) )
+        if ( fread(sigBuf, sizeof(char), SIG_SIZE, fp) != SIG_SIZE || feof(fp) )
         {
             // ここで終了することがない？
             break;
         }
-        if ( strncmp((const char *)buf, "MTrk", SIG_SIZE) )
+        sigBuf[SIG_SIZE] = '\0';
+        if ( strncmp((const char *)sigBuf, "MTrk", SIG_SIZE) )
         {
             // Allow junk data which follows an end of track
             break;
