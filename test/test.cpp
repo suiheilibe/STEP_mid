@@ -14,13 +14,11 @@
 
 extern "C" void(WINAPI *STEPSetValue)(FILE_INFO *, FIELDTYPE, LPCTSTR);
 
-void my_STEPSetValue(FILE_INFO *fi, FIELDTYPE ft, LPCTSTR str) {
-    DEBUGOUT("FILE_INFO = %p, FIELDTYPE = %p, value = %p\n", fi, ft, str);
-};
-
 TEST_GROUP(STEPMidTestGroup) {
     void setup() {
-        STEPSetValue = my_STEPSetValue;
+        STEPSetValue = [](FILE_INFO *fi, FIELDTYPE ft, LPCTSTR str) {
+            DEBUGOUT("FILE_INFO = %p, FIELDTYPE = %d, value = %p\n", fi, ft, str);
+        };
         errno_t err = _tfopen_s(&fp, _T("test_metaevents.mid"), _T("rb"));
         events = (SMFUtil::MetaEvent *)malloc(sizeof(SMFUtil::MetaEvent) * SMFUtil::META_MAX);
     }
