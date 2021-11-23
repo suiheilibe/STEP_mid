@@ -43,7 +43,7 @@ struct WcharBufferInfo {
 };
 
 #ifdef STEP_K
-static int mbtowcAndUpdateBufferInfo(char* const& buf, struct WcharBufferInfo* const binfo)
+static int mbtowcAndUpdateBufferInfo(const char* const buf, struct WcharBufferInfo* const binfo)
 {
     WCHAR *wbuf = (WCHAR *)binfo->buf;
     WCHAR *heapWbuf = (WCHAR *)binfo->heapBuf;
@@ -92,7 +92,7 @@ static int mbtowcAndUpdateBufferInfo(char* const& buf, struct WcharBufferInfo* c
 }
 #endif
 
-int STEPMidUtil::readMetaEvent(FILE_INFO* const& pFileMP3, FILE* const& fp, const SMFUtil::MetaEvent* const& events)
+int STEPMidUtil::readMetaEvent(FILE_INFO* const pFileMP3, FILE* const fp, const SMFUtil::MetaEvent* const events)
 {
     int ret = 0;
     int maxLength = getMaxMetaEventLength(events);
