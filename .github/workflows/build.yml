@@ -37,7 +37,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
-      - name: Build
+      - name: Build and test
         run: |
           mkdir ${BUILD_DIR} && cd ${BUILD_DIR}
           cmake -G "MSYS Makefiles" -D${TARGET}=1 ..
