@@ -2,10 +2,6 @@ name: Build and test
 
 on: [push]
 
-defaults:
-  run:
-    shell: msys2 {0}
-
 jobs:
   build_and_test:
     strategy:
@@ -20,9 +16,13 @@ jobs:
             msystem: MINGW32
           - arch: x86_64
             msystem: MINGW64
+    defaults:
+      run:
+        shell: msys2 {0}
     runs-on: windows-latest
     env:
       TARGET: ${{ matrix.target }}
+      BUILD_DIR: build
     steps:
       - uses: msys2/setup-msys2@v2
         with:
@@ -38,8 +38,14 @@ jobs:
           fetch-depth: 0
           submodules: true
       - name: Configure
-        run: cmake -G "MSYS Makefiles" -D${TARGET}=1
+        run: |
+          mkdir ${BUILD_DIR} && cd ${BUILD_DIR}
+          cmake -G "MSYS Makefiles" -D${TARGET}=1 ..
       - name: Build
-        run: cmake --build .
+        run: |
+          cd ${BUILD_DIR}
+          cmake --build .
       - name: Test
-        run: ctest
+        run: |
+          cd ${BUILD_DIR}
+          ctest
