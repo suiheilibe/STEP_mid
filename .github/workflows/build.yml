@@ -37,15 +37,9 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
-      - name: Configure
+      - name: Build
         run: |
           mkdir ${BUILD_DIR} && cd ${BUILD_DIR}
           cmake -G "MSYS Makefiles" -D${TARGET}=1 ..
-      - name: Build
-        run: |
-          cd ${BUILD_DIR}
           cmake --build .
-      - name: Test
-        run: |
-          cd ${BUILD_DIR}
           ctest
