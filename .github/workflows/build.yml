@@ -19,12 +19,12 @@ jobs:
           - arch: i686
             msystem: mingw32
           - arch: x86_64
-            msystem: mingw32
+            msystem: mingw64
     runs-on: windows-latest
+    env:
+      TARGET: ${{ matrix.target }}
+      MSYSTEM: ${{ matrix.msystem }}
     steps:
-      - env:
-          TARGET: ${{ matrix.target }}
-          MSYSTEM: ${{ matrix.msystem }}
       - uses: msys2/setup-msys2@v2
         with:
           update: false
