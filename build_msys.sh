@@ -3,7 +3,7 @@
 set -euo pipefail
 
 scriptdir="$( cd -P "$(dirname "$0")" && pwd -P )"
-script="${scriptdir}/script/build_front.sh"
+script="${scriptdir}/scripts/build_front.sh"
 generator="MSYS Makefiles"
 cmakeopts=""
 cmakebuildopts="-j4"

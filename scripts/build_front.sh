@@ -3,7 +3,7 @@
 set -euo pipefail
 
 rootdir="$1"
-script="${rootdir}/script/do_build.sh"
+script="${rootdir}/scripts/do_build.sh"
 generator="$2"
 cmakeopts="$3"
 cmakebuildopts="$4"
