@@ -33,6 +33,7 @@ jobs:
             make
             mingw-w64-${{ matrix.arch }}-gcc
             mingw-w64-${{ matrix.arch }}-cmake
+            mingw-w64-${{ matrix.arch }}-ninja
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
@@ -40,6 +41,6 @@ jobs:
       - name: Build and test
         run: |
           mkdir ${BUILD_DIR} && cd ${BUILD_DIR}
-          cmake -G "MSYS Makefiles" -D${TARGET}=1 ..
+          cmake -G "Ninja" -D${TARGET}=1 ..
           cmake --build .
           ctest
