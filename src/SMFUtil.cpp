@@ -5,7 +5,7 @@
 
 #include "debug.h"
 
-static int readVLV(FILE *fp, unsigned long *ret)
+static int readVLV(FILE* const fp, unsigned long* const ret)
 {
     unsigned long val = 0;
     int c;
@@ -14,19 +14,16 @@ static int readVLV(FILE *fp, unsigned long *ret)
 
     c = fgetc(fp);
     f = c & 0x7f;
-    for (i = 1; ; i++)
-    {
+    for (i = 1; ; i++) {
         val = (val << 7) | (c & 0x7f);
-        if ( (c & 0x80) == 0 || c == EOF )
-        {
+        if ( (c & 0x80) == 0 || c == EOF ) {
             break;
         }
         c = fgetc(fp);
     }
     DEBUGOUT("offset = %#010x, val = %d, i = %d, f = %d\n", ftell(fp) - i, val, i, f);
-    // 32ビット以上なら不正扱い
-    if ( (i == 5 && f > 0x07) || i > 5 )
-    {
+    // The decode result should be lower than 32 bits
+    if ( (i == 5 && f > 0x07) || i > 5 ) {
         DEBUGOUT("Error\n");
         return -1;
     }
@@ -38,42 +35,38 @@ static int readVLV(FILE *fp, unsigned long *ret)
     return 0;
 }
 
-static void writeDelta(FILE *fp, long val)
+static void writeDelta(FILE* const fp, const long val)
 {
-    // 0以下は0扱い
-    if ( val <= 0 )
-    {
+    // Less than or equal to 0 is 0
+    if ( val <= 0 ) {
         fputc(0, fp);
         return;
     }
-    {
-        int a[5];
-        int i;
 
-        for (i = 0; i < 5; i++)
-        {
-            a[i] = val & 0x7f;
-            val >>= 7;
-            if ( val == 0 )
-            {
+    int a[5];
+    int i;
+
+    {
+        long x = val;
+        for (i = 0; i < 5; i++) {
+            a[i] = x & 0x7f;
+            x >>= 7;
+            if (x == 0) {
                 break;
             }
         }
-        for (; i>= 0; i--)
-        {
-            if ( i == 0 )
-            {
-                fputc(a[i], fp);
-            }
-            else
-            {
-                fputc(a[i] | 0x80, fp);
-            }
+    }
+
+    for (; i>= 0; i--) {
+        if ( i == 0 ) {
+            fputc(a[i], fp);
+        } else {
+            fputc(a[i] | 0x80, fp);
         }
     }
 }
 
-static int fseekULong(FILE *stream, unsigned long offset, int origin)
+static int fseekULong(FILE* const stream, const unsigned long offset, const int origin)
 {
     if (offset > LONG_MAX) {
         DEBUGOUT("Offset excesses 'LONG_MAX'\n");
@@ -82,7 +75,7 @@ static int fseekULong(FILE *stream, unsigned long offset, int origin)
     return fseek(stream, (long)offset, origin);
 }
 
-static int getNumMessageBytes(int status, unsigned long *ret)
+static int getNumMessageBytes(const int status, unsigned long* const ret)
 {
     int index = ((status & 0xf0) >> 4) - 8;
     if (status < 0 || index < 0 || 6 < index) {
@@ -101,7 +94,7 @@ int SMFUtil::findMetaEvents(FILE* const fp, MetaEvent* const events) {
     char sigBuf[SIG_SIZE + 1];
     int curTrack = 0;
     long trkLenOffset = 0;
-    bool baFound[META_MAX]; // メタイベントが見つかったかどうか
+    bool baFound[META_MAX]; // baFound[<meta event type>] == true : Corresponding meta event is found
     int runningStatus;      // For dealing with running status rule
 
     // SMF header check
@@ -116,55 +109,44 @@ int SMFUtil::findMetaEvents(FILE* const fp, MetaEvent* const events) {
     if (fseek(fp, 10, SEEK_CUR)) {
         return -2;
     }
-    // 初期化
-    for (int i = 0; i < META_MAX; i++)
-    {
+    // Initialize
+    for (int i = 0; i < META_MAX; i++) {
         events[i].offset = -1;
         baFound[i] = false;
     }
-    for (;;)
-    {
+    for (;;) {
         runningStatus = -1;
         DEBUGOUT("Reading MTrk: offset = %#010x\n", ftell(fp));
-        if ( fread(sigBuf, sizeof(char), SIG_SIZE, fp) != SIG_SIZE || feof(fp) )
-        {
-            // ここで終了することがない？
+        if ( fread(sigBuf, sizeof(char), SIG_SIZE, fp) != SIG_SIZE || feof(fp) ) {
             break;
         }
         sigBuf[SIG_SIZE] = '\0';
-        if ( strncmp((const char *)sigBuf, "MTrk", SIG_SIZE) )
-        {
+        if ( strncmp((const char *)sigBuf, "MTrk", SIG_SIZE) ) {
             // Allow junk data which follows an end of track
             break;
         }
-        trkLenOffset = ftell(fp);// トラックのサイズを書く場所
+        trkLenOffset = ftell(fp); // Position of the track length
         if (trkLenOffset < 0) {
             return -2;
         }
-        // サイズは無視
-        if (fseek(fp, 4, SEEK_CUR)) {
+        // Skip size
+        if ( fseek(fp, 4, SEEK_CUR) ) {
             return -2;
         }
-        for (;;)
-        {
+        for (;;) {
             unsigned long seekOffset = 0;
-            // デルタタイムは読み飛ばす
-            if ( readVLV(fp, nullptr) < 0 )
-            {
+            // Skip delta time
+            if ( readVLV(fp, nullptr) < 0 ) {
                 return -1;
             }
             int c = fgetc(fp);
-            if ( c == EOF )
-            {
-                break;// 本来ここで終了するのはエラーのはずだが
+            if ( c == EOF ) {
+                break;
             }
-            if (c & 0x80)
-            {
-                if ( (c & 0xf0) == 0xf0 )
-                {
-                    if ( c == 0xff )
-                    {
-                        // メタイベント
+            if ( c & 0x80 ) {
+                if ( (c & 0xf0) == 0xf0 ) {
+                    if ( c == 0xff ) {
+                        // Meta event
                         int type = fgetc(fp);
                         DEBUGOUT("Meta event starts: offset = %#010x, type = %#04x\n", ftell(fp) - 2, type);
                         unsigned long length;
@@ -172,16 +154,13 @@ int SMFUtil::findMetaEvents(FILE* const fp, MetaEvent* const events) {
                             return -1;
                         }
                         DEBUGOUT("Meta event length: %d\n", length);
-                        if ( type >= 1 && type <= 3 )
-                        {
-                            // テキスト(コメント), 著作権(作曲者), シーケンス名(曲名)
-                            // 最初のトラックでなければ曲名として扱わない
-                            if ( type != 3 || curTrack == 0 )
-                            {
+                        if ( type >= 1 && type <= 3 ) {
+                            // Text (as Comment), Copyright (as Composer), Sequence name (as Track mame)
+                            // Treat a "Sequence name" event as "Track name" only if it appears on the first track
+                            if ( type != 3 || curTrack == 0 ) {
                                 int index = type - 1;
                                 MetaEvent *p = &events[index];
-                                if ( baFound[index] == false )
-                                {
+                                if ( baFound[index] == false ) {
                                     long offset = ftell(fp);
                                     if (offset < 0) {
                                         return -2;
@@ -193,18 +172,15 @@ int SMFUtil::findMetaEvents(FILE* const fp, MetaEvent* const events) {
                                 baFound[index] = true;
                             }
                         }
-                        else if ( type == 0x2f )
-                        {
+                        else if ( type == 0x2f ) {
                             DEBUGOUT("End of track %d\n", curTrack + 1);
-                            // エンドオブトラック
+                            // End of track
                             break;
                         }
                         seekOffset = length;
-                    }
-                    else
-                    {
+                    } else {
                         DEBUGOUT("SysEx starts: offset = %#010x, status = %#04x\n", ftell(fp) - 1, runningStatus);
-                        // SysExは読み飛ばす
+                        // Skip any SysEx
                         unsigned long length;
                         if (readVLV(fp, &length) < 0) {
                             return -1;
@@ -212,39 +188,35 @@ int SMFUtil::findMetaEvents(FILE* const fp, MetaEvent* const events) {
                         DEBUGOUT("SysEx length: %d\n", length);
                         seekOffset = length;
                     }
-                }
-                else
-                {
+                } else {
                     unsigned long n;
                     runningStatus = c;
-                    if (getNumMessageBytes(runningStatus, &n) < 0) {
+                    if ( getNumMessageBytes(runningStatus, &n) < 0 ) {
                         // Impossible
                         return -1;
                     }
                     DEBUGOUT("Channel message: offset = %#010x, status = %#04x, size = %d\n", ftell(fp) - 1, runningStatus, n + 1);
                     seekOffset = n;
                 }
-            }
-            else
-            {
+            } else {
                 unsigned long n;
-                if (getNumMessageBytes(runningStatus, &n) < 0) {
+                if ( getNumMessageBytes(runningStatus, &n) < 0 ) {
                     // Invalid runningStatus which violates the running status rule
                     return -1;
                 }
                 DEBUGOUT("Channel message (RS): offset = %#010x, status = %#04x, size = %d\n", ftell(fp) - 1, runningStatus, n);
                 seekOffset = n - 1;
             }
-            if (fseekULong(fp, seekOffset, SEEK_CUR)) {
+            if ( fseekULong(fp, seekOffset, SEEK_CUR) ) {
                 return -2;
             }
         }
-        // 最初のトラックでシーケンス名以外全て見つかった
-        if ( baFound[META_COMMENT] && baFound[META_COPYRIGHT] )
-        {
+        // All target meta events except the sequence name are found on the first track
+        if ( baFound[META_COMMENT] && baFound[META_COPYRIGHT] ) {
             break;
         }
         curTrack++;
     }
+
     return 0;
 }

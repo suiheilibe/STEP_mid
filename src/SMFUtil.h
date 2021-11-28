@@ -13,11 +13,9 @@ public:
     };
     struct MetaEvent
     {
-        // トラックの長さのアドレス
-        long trkLenOffset;
-        // 先頭からのアドレス
-        long offset;
-        unsigned long length;
+        long trkLenOffset;    // Position of the track length
+        long offset;          // Position of the meta event
+        unsigned long length; // Length of the meta event
     };
     static const int SIG_SIZE = 4;
     static int findMetaEvents(FILE* const fp, MetaEvent* const events);
