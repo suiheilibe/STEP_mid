@@ -11,7 +11,9 @@ class STEPMidUtil
 {
 public:
     static const int STATIC_META_BUFFER_SIZE = 1024;
-    static int readMetaEvent(FILE_INFO* const pFileMP3, FILE* const fp, const SMFUtil::MetaEvent * const events);
+    static int readMetaEvent(FILE_INFO *const pFileMP3, FILE *const fp,
+                             const SMFUtil::MetaEvent *const events,
+                             void (*saSetFunc[SMFUtil::META_MAX])(FILE_INFO *, LPCTSTR));
 };
 
 #endif

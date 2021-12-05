@@ -13,9 +13,6 @@
 #include "STEPMidUtil.h"
 #include "debug.h"
 
-static void (*saSetFunc[])(FILE_INFO*,LPCTSTR) = {SetComment, SetArtistName, SetTrackName};
-// static LPCTSTR (*saGetFunc[])(FILE_INFO*) = {GetComment, GetArtistName, GetTrackName};
-
 static char staticBuf[STEPMidUtil::STATIC_META_BUFFER_SIZE];
 #ifdef STEP_K
 static WCHAR staticWbuf[STEPMidUtil::STATIC_META_BUFFER_SIZE];
@@ -95,7 +92,9 @@ static int mbtowcAndUpdateBufferInfo(const char* const buf, struct WcharBufferIn
 }
 #endif
 
-int STEPMidUtil::readMetaEvent(FILE_INFO* const pFileMP3, FILE* const fp, const SMFUtil::MetaEvent* const events)
+int STEPMidUtil::readMetaEvent(FILE_INFO *const pFileMP3, FILE *const fp,
+                               const SMFUtil::MetaEvent *const events,
+                               void (*saSetFunc[SMFUtil::META_MAX])(FILE_INFO *, LPCTSTR))
 {
     int ret = 0;
     int maxLength = getMaxMetaEventLength(events);

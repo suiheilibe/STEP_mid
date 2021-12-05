@@ -12,15 +12,12 @@
 #include "STEPMidUtil.h"
 #include "debug.h"
 
-extern "C" void(WINAPI *STEPSetValue)(FILE_INFO *, FIELDTYPE, LPCTSTR);
-
-void WINAPI my_STEPSetValue(FILE_INFO* fi, FIELDTYPE ft, LPCTSTR str) {
-    DEBUGOUT("FILE_INFO = %p, FIELDTYPE = %d, value = %p\n", fi, ft, str);
+static void my_SetValue(FILE_INFO *fi, LPCTSTR str) {
+    DEBUGOUT("FILE_INFO = %p, value = %p\n", fi, str);
 }
 
 TEST_GROUP(STEPMidTestGroup) {
     void setup() {
-        STEPSetValue = my_STEPSetValue;
         errno_t err = _tfopen_s(&fp, _T("test_metaevents.mid"), _T("rb"));
         events = (SMFUtil::MetaEvent *)malloc(sizeof(SMFUtil::MetaEvent) * SMFUtil::META_MAX);
     }
@@ -32,6 +29,7 @@ TEST_GROUP(STEPMidTestGroup) {
 
     FILE *fp = nullptr;
     SMFUtil::MetaEvent *events = nullptr;
+    void (*saSetFunc[SMFUtil::META_MAX])(FILE_INFO *, LPCTSTR) = {my_SetValue, my_SetValue, my_SetValue};
 };
 
 TEST(STEPMidTestGroup, TestMain) {
@@ -42,7 +40,7 @@ TEST(STEPMidTestGroup, TestMain) {
     CHECK_EQUAL(1553, events[SMFUtil::MetaEventType::META_COPYRIGHT].length);
     // Sequence/Track Name
     CHECK_EQUAL(16361, events[SMFUtil::MetaEventType::META_SEQNAME].length);
-    CHECK_EQUAL(0, STEPMidUtil::readMetaEvent(nullptr, fp, events));
+    CHECK_EQUAL(0, STEPMidUtil::readMetaEvent(nullptr, fp, events, saSetFunc));
 }
 
 int main(int argc, char *argv[])
