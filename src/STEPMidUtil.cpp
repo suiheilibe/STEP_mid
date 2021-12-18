@@ -1,6 +1,7 @@
 // to use std::min with MSVC
 #define NOMINMAX
 #include <windows.h>
+#undef  NOMINMAX
 #include <tchar.h>
 
 #include <algorithm>
