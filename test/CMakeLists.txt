@@ -28,7 +28,7 @@ add_executable(${test_target} test.cpp $<TARGET_OBJECTS:${target_objs}>)
 target_link_libraries(${test_target} ${test_lib})
 
 if(STEP_K)
-  target_compile_definitions(${test_target} PRIVATE UNICODE=1 _UNICODE=1)
+  target_compile_definitions(${test_target} PRIVATE UNICODE=1 _UNICODE=1 STEP_K=1)
 endif()
 
 file(GLOB test_files "*.mid")
