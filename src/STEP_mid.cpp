@@ -23,14 +23,30 @@ static TCHAR plugininfo[256];
 
 extern "C" BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
+    void *ptr;
+
     switch (fdwReason) {
     case DLL_PROCESS_ATTACH:
-        //new STEPMidTls();
+        if (! STEPMidTls::initialize()) {
+            return FALSE;
+        };
         hDLL = hinstDLL;
         break;
     case DLL_THREAD_ATTACH:
+        STEPMidTls::allocAndSet(sizeof(STEPMidUtil::TlsData));
+        break;
     case DLL_THREAD_DETACH:
+        ptr = STEPMidTls::get();
+        if (ptr != nullptr) {
+            STEPMidTls::free(ptr);
+        }
+        break;
     case DLL_PROCESS_DETACH:
+        ptr = STEPMidTls::get();
+        if (ptr != nullptr) {
+            STEPMidTls::free(ptr);
+        }
+        STEPMidTls::deinitialize();
         break;
     }
     return TRUE;

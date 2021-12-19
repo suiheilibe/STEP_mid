@@ -6,17 +6,18 @@
 class STEPMidTls {
 public:
     // Must be called in the DllMain
-    bool initialize();
+    static bool initialize();
     // Must be called in the DllMain
-    bool deinitialize();
+    static bool deinitialize();
     // Must be called in the DllMain
-    LPVOID allocAndSet();
-    LPVOID get();
+    // Allocated memory will be zero filled
+    static LPVOID allocAndSet(size_t size);
+    static LPVOID get();
     // Must be called in the DllMain
-    void free();
+    static void free(void *ptr);
 
 private:
-    DWORD dwTlsIndex = TLS_OUT_OF_INDEXES;
+    static DWORD dwTlsIndex = TLS_OUT_OF_INDEXES;
 };
 
 #endif
