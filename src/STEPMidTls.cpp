@@ -5,6 +5,8 @@
 #include "STEPMidTls.h"
 #include "debug.h"
 
+DWORD STEPMidTls::dwTlsIndex = TLS_OUT_OF_INDEXES;
+
 bool STEPMidTls::initialize()
 {
     assert(dwTlsIndex == TLS_OUT_OF_INDEXES);

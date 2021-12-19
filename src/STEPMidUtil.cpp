@@ -12,12 +12,8 @@
 
 #include "SMFUtil.h"
 #include "STEPMidUtil.h"
+#include "STEPMidTls.h"
 #include "debug.h"
-
-static char staticBuf[STEPMidUtil::STATIC_META_BUFFER_SIZE];
-#ifdef STEP_K
-static WCHAR staticWbuf[STEPMidUtil::STATIC_META_BUFFER_SIZE];
-#endif
 
 static int getMaxMetaEventLength(const SMFUtil::MetaEvent* const& events)
 {
@@ -98,17 +94,23 @@ int STEPMidUtil::readMetaEvent(FILE_INFO *const pFileMP3, FILE *const fp,
                                void (*saSetFunc[SMFUtil::META_MAX])(FILE_INFO *, LPCTSTR))
 {
     int ret = 0;
+
+    struct STEPMidUtil::TlsData *data = (struct STEPMidUtil::TlsData *)STEPMidTls::get();
+    if (data == nullptr) {
+        return -1;
+    }
+
     int maxLength = getMaxMetaEventLength(events);
     if (maxLength > (int)std::min(SIZE_MAX / sizeof(char), (size_t)INT_MAX) - 1) {
         maxLength = (int)std::min(SIZE_MAX / sizeof(char), (size_t)INT_MAX) - 1;
     }
     int lengthWithNullLimit = maxLength + 1;
-    char *buf = staticBuf, *heapBuf = nullptr;
+    char *buf = data->metadataBuf, *heapBuf = nullptr;
 #ifdef STEP_K
     struct WcharBufferInfo wcharBufferInfo = {
-        staticWbuf,
+        data->metadataWbuf,
         nullptr,
-        STEPMidUtil::STATIC_META_BUFFER_SIZE / sizeof(WCHAR)
+        STEPMidUtil::STATIC_META_BUFFER_SIZE
     };
 #endif
     DEBUGOUT("lengthWithNullLimit = %d\n", lengthWithNullLimit);

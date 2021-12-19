@@ -17,7 +17,7 @@ public:
     static void free(void *ptr);
 
 private:
-    static DWORD dwTlsIndex = TLS_OUT_OF_INDEXES;
+    static DWORD dwTlsIndex;
 };
 
 #endif
