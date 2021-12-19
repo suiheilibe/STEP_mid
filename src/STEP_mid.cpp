@@ -8,6 +8,7 @@
 
 #include "SMFUtil.h"
 #include "STEPMidUtil.h"
+#include "STEPMidTls.h"
 #include "debug.h"
 
 #include "resource.h"
@@ -24,6 +25,7 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvRe
 {
     switch (fdwReason) {
     case DLL_PROCESS_ATTACH:
+        //new STEPMidTls();
         hDLL = hinstDLL;
         break;
     case DLL_THREAD_ATTACH:

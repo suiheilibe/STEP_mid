@@ -14,6 +14,7 @@ add_library(${target_objs} OBJECT
   STEP_mid.cpp
   SMFUtil.cpp
   STEPMidUtil.cpp
+  STEPMidTls.cpp
   ${steplugin})
 
 if(MINGW)
