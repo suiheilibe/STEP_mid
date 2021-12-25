@@ -11,13 +11,13 @@ public:
     static bool deinitialize();
     // Must be called in the DllMain
     // Allocated memory will be zero filled
-    static LPVOID allocAndSet(size_t size);
-    static LPVOID get();
+    static void* allocAndSet(size_t size);
+    static void* get();
     // Must be called in the DllMain
     static void free(void *ptr);
 
 private:
-    static DWORD dwTlsIndex;
+    static DWORD tlsIndex;
 };
 
 #endif

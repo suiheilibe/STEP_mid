@@ -30,13 +30,14 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvRe
         if (! STEPMidTls::initialize()) {
             return FALSE;
         };
-        STEPMidTls::allocAndSet(sizeof(STEPMidUtil::TlsData));
         hDLL = hinstDLL;
-        break;
+        // Continues to the first thread initialization
     case DLL_THREAD_ATTACH:
         ptr = STEPMidTls::get();
         if (ptr == nullptr) {
-            STEPMidTls::allocAndSet(sizeof(STEPMidUtil::TlsData));
+            if (STEPMidTls::allocAndSet(sizeof(STEPMidUtil::TlsData)) == nullptr) {
+                return FALSE;
+            };
         }
         break;
     case DLL_THREAD_DETACH:
