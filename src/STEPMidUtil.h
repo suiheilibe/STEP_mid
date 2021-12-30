@@ -1,5 +1,5 @@
-#ifndef _STEP_MID_STEPMIDUTIL_H_
-#define _STEP_MID_STEPMIDUTIL_H_
+#ifndef STEP_MID_STEPMIDUTIL_H_
+#define STEP_MID_STEPMIDUTIL_H_
 
 #include <stdio.h>
 
