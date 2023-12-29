@@ -38,9 +38,11 @@ https://github.com/suiheilibe/STEP_mid
 
 1. master ブランチにタグを打つ
     git tag v0.2.0
-2. MinGW-w64 (i686, x86_64 版両方が必要) と CMake (i686, x86_64 版両方が必要)
+2. MinGW-w64, CMake, Ninja (それぞれ i686, x86_64 版両方が必要)
    のインストールされた MSYS2 のシェルにてリポジトリのルートにある、
    msys_build.sh スクリプトを実行すると dist ディレクトリに配布用バイナリが生成される
+   参考: 上記の依存を MSYS2 にインストールするコマンド(MSYS2 のシェルで実行する)
+　　    pacman -S mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain mingw-w64-i686-cmake mingw-w64-x86_64-cmake mingw-w64-i686-ninja mingw-w64-x86_64-ninja
 3. dist ディレクトリの内容と readme.txt, COPYING を zip アーカイブする
 
 [更新履歴]
